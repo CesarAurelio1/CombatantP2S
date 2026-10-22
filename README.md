@@ -1,2 +1,2 @@
-# CombatantP2S
-L'épreuve du combatant
+# p2s
+PS2
