@@ -2,11 +2,11 @@
 #include <LibRobus.h>
 
 void setup() {
-  // put your setup code here, to run once:
+  BoardInit();
+
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
+void couleur() {
 
-// put function definitions here:
+  
+}
