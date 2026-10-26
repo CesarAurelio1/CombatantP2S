@@ -61,6 +61,5 @@ void setup(){
 
 
 void loop() {
-  avance(50);
-  delay(1000);
+  followLine();
 }
