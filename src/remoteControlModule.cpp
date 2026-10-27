@@ -43,6 +43,7 @@ struct Button_t
     Button_Callback_t callback;
     uint8_t currentState;
     uint8_t lastState;
+    uint8_t pin;
 };
 
 /* ****************************************************************************
@@ -86,31 +87,34 @@ void InitRemoteControlModule(void)
 {
     IrSender.begin(COMMUNICATION_FEEDBACK_LED_PIN);
 
-    pinMode(BTN_ROBOT_EXIT_WAIT_MODE_PIN, INPUT);
-    pinMode(BTN_ROBOT_START_PIN, INPUT);
-
 
     btnRobotExitWaitMode.callback = OnBtnRobotExitWaitModeStateChange;
     btnRobotExitWaitMode.debounce = false;
     btnRobotExitWaitMode.debounceDelay = BUTTON_DEBOUNCE_TIME_MS;
-    btnRobotExitWaitMode.currentState = digitalRead(BTN_ROBOT_EXIT_WAIT_MODE_PIN);
-    btnRobotExitWaitMode.lastState = btnRobotExitWaitMode.currentState;
     btnRobotExitWaitMode.timestamp = millis();
+    btnRobotExitWaitMode.pin = BTN_ROBOT_EXIT_WAIT_MODE_PIN;
+    btnRobotExitWaitMode.currentState = digitalRead(btnRobotExitWaitMode.pin);
+    btnRobotExitWaitMode.lastState = btnRobotExitWaitMode.currentState;
+    
+    pinMode(btnRobotExitWaitMode.pin, INPUT);
 
     btnRobotStart.callback = OnBtnRobotStartStateChange;
     btnRobotStart.debounce = false;
     btnRobotStart.debounceDelay = BUTTON_DEBOUNCE_TIME_MS;
-    btnRobotStart.currentState = digitalRead(BTN_ROBOT_START_PIN);
-    btnRobotStart.lastState = btnRobotStart.currentState;
     btnRobotStart.timestamp = millis();
+    btnRobotExitWaitMode.pin = BTN_ROBOT_START_PIN;
+    btnRobotStart.currentState = digitalRead(btnRobotExitWaitMode.pin);
+    btnRobotStart.lastState = btnRobotStart.currentState;
+
+    pinMode(btnRobotExitWaitMode.pin, INPUT);
 }
 
 void UpdateRemoteControlModule(void)
 {
     unsigned long currentMillis = millis();
 
-    btnRobotExitWaitMode.currentState = digitalRead(BTN_ROBOT_EXIT_WAIT_MODE_PIN);
-    btnRobotStart.currentState = digitalRead(BTN_ROBOT_START_PIN);
+    btnRobotExitWaitMode.currentState = digitalRead(btnRobotExitWaitMode.pin);
+    btnRobotStart.currentState = digitalRead(btnRobotStart.pin);
 
     if (btnRobotExitWaitMode.debounce == false)
     {
