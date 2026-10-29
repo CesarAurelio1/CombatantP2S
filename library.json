@@ -1,0 +1,22 @@
+{
+  "name": "LibRobus",
+  "description": "Library for Université de Sherbrooke Robus robot",
+  "keywords": "robus",
+  "authors": [
+    {
+      "name": "Jean-Samuel Lauzon",
+      "maintainer": true
+    },
+    {
+      "name": "Jonathan Vincent"
+    },
+    {
+      "name": "Serge Caron",
+      "maintainer": true
+    }
+  ],
+  "version": "1.0.5",
+  "dependencies": {
+    "Adafruit_TCS34725": "lib\\Adafruit_TCS34725-master\\Adafruit_TCS34725.h"
+  }
+}
