@@ -54,10 +54,10 @@ static const uint8_t IR_COMMAND_START = 0x11;
 static const uint8_t IR_COMMAND_EXIT_WAIT_MODE = 0x22;
 static const uint8_t IR_REPEAT = 0x00;
 
-static const uint8_t IR_LED_ON = HIGH;
-static const uint8_t IR_LED_OFF = LOW;
-static const uint8_t COMM_LED_ON = LOW;
-static const uint8_t COMM_LED_OFF = HIGH;
+static const bool IR_LED_ON = HIGH;
+static const bool IR_LED_OFF = LOW;
+static const bool COMM_LED_ON = LOW;
+static const bool COMM_LED_OFF = HIGH;
 
 
 static const uint8_t COMMUNICATION_FEEDBACK_LED_PIN = 2;
@@ -65,8 +65,8 @@ static const uint8_t BTN_ROBOT_EXIT_WAIT_MODE_PIN = 3;
 static const uint8_t BTN_ROBOT_START_PIN = 4;
 
 static const uint8_t BUTTON_DEBOUNCE_TIME_MS = 50;
-static const uint8_t BUTTON_PRESS_STATE = HIGH;
-static const uint8_t BUTTON_RELEASE_STATE = LOW;
+static const bool BUTTON_PRESS_STATE = HIGH;
+static const bool BUTTON_RELEASE_STATE = LOW;
 
 
 static struct Button_t btnRobotExitWaitMode;
@@ -102,7 +102,7 @@ void InitRemoteControlModule(void)
     btnRobotStart.debounce = false;
     btnRobotStart.debounceDelay = BUTTON_DEBOUNCE_TIME_MS;
     btnRobotStart.timestamp = millis();
-    btnRobotExitWaitMode.pin = BTN_ROBOT_START_PIN;
+    btnRobotStart.pin = BTN_ROBOT_START_PIN;
     btnRobotStart.currentState = digitalRead(btnRobotExitWaitMode.pin);
     btnRobotStart.lastState = btnRobotStart.currentState;
 
