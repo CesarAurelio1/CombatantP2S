@@ -18,5 +18,4 @@ void loop()
 {
     // Lire la manette et activer la demande correspondante
     lireManette(REMOTE_read());
-    delay(100); // Petite pause pour éviter de saturer le port série
 }
