@@ -35,6 +35,9 @@ Fonctions d'initialisation (setup)
 // -> Generalement on y initilise les varibbles globales
 void setup() {
   // put your setup code here, to run once:
+  // Initialize debug communication on Serial0
+  Serial.begin(BAUD_RATE_SERIAL0);
+  Serial.println("Debug communication initialized");
   InitRemoteControlModule();
 }
 
