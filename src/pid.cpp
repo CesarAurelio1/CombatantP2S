@@ -16,7 +16,7 @@ static float Ksync = 0.0005;
 
 static float KpL = 0.3;
 static float KiL = 0.0;
-static float KdL = 0.05;
+static float KdL = 0.0;
 
 
 //static float tolerance = 10;
@@ -31,13 +31,9 @@ static int pulses_per_revolution = 3200;
 
 static int couleur = 5;
 
-static float vitesse_min = 0.00;
+static float vitesse_min = 0.1;
 static float vitesse_max = 0.4;
 static float vitesse = 0;
-
-static float input1 = 0;   // capteur de gauche, redonne la valeur à quelle point il voit la ligne ou non
-static float input2 = 0;   // capteur du centre
-static float input3 = 0;   // capteur de droite
 
 static int suiveurGauche = A0;
 static int suiveurCentre = A1;
@@ -75,8 +71,8 @@ resultat PID_ligne(float offset, float Kp, float Ki, float Kd, float &previous_e
 
   float pid = p + i + d;
 
-  r.pidD = pid / 2;
-  r.pidG = -1 * pid / 2;
+  r.pidD = -1 * pid;
+  r.pidG = pid;
   // float p = float(Kp) * float(offset);
   // integral += offset * 0.02;
   // float i = Ki * integral;
@@ -191,38 +187,45 @@ void avance(float distance) {
   arret();
 }
 
+static float derniere_erreur = 0;
+
 float calcul_erreur()
 {
-  float erreur = 0;
+  float g = analogRead(suiveurGauche) / 1024.0;
+  float m = analogRead(suiveurCentre) / 1024.0;
+  float d = analogRead(suiveurDroite) / 1024.0;
 
-  float gauche = analogRead(suiveurGauche)/1024.0;
-  float milieu = analogRead(suiveurCentre)/1024.0;
-  float droite = analogRead(suiveurDroite)/1024.0;
+  float somme = g + m + d;
 
-  erreur = (droite - gauche) * (1 - milieu);
+  if (somme < 0.15) {
+    return (derniere_erreur >= 0) ? 1.0 : -1.0;
+  }
 
-  return erreur;
+  derniere_erreur = (d - g) / somme;
+  return derniere_erreur;
 }
 
 void followLine()
 {
   float previous_error = 0;
   float integral = 0;
-  nombre_pasD = 0;
-  nombre_pasG = 0;
-  vitesse = (vitesse_min + vitesse_max) / 2;
 
   unsigned long prochain = millis();
 
   while(couleur == 5)
   {
-    resultat correction = PID_ligne(calcul_erreur(), KpL, KiL, KdL, previous_error, integral);
+    float erreur = calcul_erreur();
+    float a = 0.0;
+    float erreurDouce = erreur * (a + (1 - a) * abs(erreur));
+    resultat correction = PID_ligne(erreurDouce, KpL, KiL, KdL, previous_error, integral);
 
-    float pidD = vitesse + correction.pidD;
-    float pidG = vitesse + correction.pidG;
+    float vitesseCourante = vitesse_max - 0.1 - (vitesse_max - vitesse_min) * abs(erreur/2);
 
-    pidD = constrain(pidD, vitesse_min, vitesse_max);
-    pidG = constrain(pidG, vitesse_min, vitesse_max);
+    float pidD = vitesseCourante + correction.pidD;
+    float pidG = vitesseCourante + correction.pidG;
+
+    pidD = constrain(pidD, -0.3, vitesse_max);
+    pidG = constrain(pidG, -0.3, vitesse_max);
 
     MOTOR_SetSpeed(LEFT,pidG);
     MOTOR_SetSpeed(RIGHT,pidD);
