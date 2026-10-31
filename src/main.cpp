@@ -1,6 +1,6 @@
 /*
 Projet: rouler
-Equipe: stationnement P-w
+Equipe: stationnement P-2
 Auteurs: Les membres auteurs du script
 Description: Breve description du script
 Date: Derniere date de modification

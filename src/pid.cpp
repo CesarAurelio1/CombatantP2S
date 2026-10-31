@@ -32,7 +32,7 @@ static int pulses_per_revolution = 3200;
 static int couleur = 5;
 
 static float vitesse_min = 0.1;
-static float vitesse_max = 0.4;
+static float vitesse_max = 0.5;
 static float vitesse = 0;
 
 static int suiveurGauche = A0;
@@ -198,7 +198,7 @@ float calcul_erreur()
   float somme = g + m + d;
 
   if (somme < 0.15) {
-    return (derniere_erreur >= 0) ? 1.0 : -1.0;
+    return (derniere_erreur >= 0) ? 0.5 : -0.5;
   }
 
   derniere_erreur = (d - g) / somme;
@@ -215,11 +215,11 @@ void followLine()
   while(couleur == 5)
   {
     float erreur = calcul_erreur();
-    float a = 0.0;
-    float erreurDouce = erreur * (a + (1 - a) * abs(erreur));
-    resultat correction = PID_ligne(erreurDouce, KpL, KiL, KdL, previous_error, integral);
+    
+    erreur = erreur * abs(erreur);
+    resultat correction = PID_ligne(erreur, KpL, KiL, KdL, previous_error, integral);
 
-    float vitesseCourante = vitesse_max - 0.1 - (vitesse_max - vitesse_min) * abs(erreur/2);
+    float vitesseCourante = vitesse_max - 0.2 - (vitesse_max - vitesse_min) * abs(erreur/2);
 
     float pidD = vitesseCourante + correction.pidD;
     float pidG = vitesseCourante + correction.pidG;
