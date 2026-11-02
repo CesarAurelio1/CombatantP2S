@@ -14,6 +14,7 @@ Inclure les librairies de functions que vous voulez utiliser
 #include "pid.h"
 #include "ledModule.h"
 #include "AttenteIR.h"
+#include "remoteControlModule.h"
 
 /*
 Variables globales et defines
@@ -55,6 +56,10 @@ void setup(){
   MOTOR_SetSpeed(RIGHT, 0);
 
   Serial.println("Robot pret a recevoir la manette");
+
+  Serial.begin(BAUD_RATE_SERIAL0);
+  Serial.println("Debug communication initialized");
+  InitRemoteControlModule();
 }
 
 
@@ -62,5 +67,6 @@ void loop() {
   UpdateLedModule();
   // Lire la manette et activer la demande correspondante
   lireManette(REMOTE_read());
+  UpdateRemoteControlModule();
   suivre_ligne();
 }
