@@ -1,2 +1,2 @@
-void lireManette(uint32_t message);
+int lireManette(uint32_t message);
 void beep(int count);
