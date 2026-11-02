@@ -1,4 +1,6 @@
 #include "pince.h"
+#include "pid.h"
+#include "suiveurDeLigne.h"
 #include <LibRobus.h>
 #include <Servo.h>
 
@@ -52,11 +54,11 @@ void trouver_verre()
   if (distance_capteur > 231)
   {
     distance_capteur = analogRead(CAPTEUR_PIN);
-    distance_avancer = ((distance_capteur*100)/532)
+    distance_avancer = ((distance_capteur*100)/532);
     avance(distance_avancer-70);
     fermer_pince();
 
-    tourner(180);
+    turn_degrees(180, true); // A CHANGER
     avance(distance_avancer-70);
   }
 }

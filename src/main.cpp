@@ -29,12 +29,8 @@ Variables globales et defines
 bool bumperArr;
 int vertpin = 48;
 int rougepin = 49;
-bool vert = false;
-bool rouge = false;
-int etat = 0; 
-int etatPast = 0;
-
-bool partie = 0;
+bool demandeDemarrage = false;
+bool demandeReveil = false;
 
 void setup(){
   BoardInit();
@@ -47,21 +43,52 @@ void setup(){
   delay(100);
   beep(2);
 
-   MOTOR_SetSpeed(LEFT, 0);
+  MOTOR_SetSpeed(LEFT, 0);
   MOTOR_SetSpeed(RIGHT, 0);
 }
 
 
 void loop() {
   UpdateLedModule();
-  if(partie == false)
+  if(demandeDemarrage == false)
   {
     while(lireManette(REMOTE_read()) != 1)
     {
       delay(10);
     }
-    partie = true;
+    demandeDemarrage = true;
   }
-  
-  suivre_ligne();
+
+  switch(GetZoneColor())
+  {
+    case CZ_RED: // (ROSE)
+        // Code pour la zone rouge TOMBER LA QUILLE
+        break;
+    case CZ_YELLOW:
+        contourner_mur(35);
+        break;
+    case CZ_ORANGE:
+        // Code pour la zone orange RAMASSER LE VERRE
+        break;
+    case CZ_BLUE:
+        if(demandeReveil == false)
+        {
+            while(lireManette(REMOTE_read()) != 2)
+            {
+                beep(1); // Prouver que qqch est recu mais que ce n'est pas la bonne demande
+                delay(10);
+            }
+            demandeReveil = true;
+        }
+        break;
+    case CZ_GREEN:
+        avance(85);
+        break;
+    case CZ_OTHER:
+        suivre_ligne();
+        break;
+    default:
+        arret(); // Temporaire, à remplacer par le code approprié pour gérer les autres couleurs
+        break;
+  }
 }

@@ -10,17 +10,18 @@ Date: Derniere date de modification
 Inclure les librairies de functions que vous voulez utiliser
 **************************************************************************** */
 #include "ledModule.h"
+#include "couleur.h"
 
-static enum Color_Zone GetZoneColor();
+static enum Color_Zone GetLEDColor();
 static void DisplayColor(uint8_t pin);
 static void ClearColorDisplay(void);
 
 
-static const uint8_t RED_LED_PIN = 1;
-static const uint8_t YELLOW_LED_PIN = 1;
-static const uint8_t ORANGE_LED_PIN = 1;
-static const uint8_t BLUE_LED_PIN = 1;
-static const uint8_t GREEN_LED_PIN = 1;
+static const uint8_t RED_LED_PIN = 42;
+static const uint8_t YELLOW_LED_PIN = 41;
+static const uint8_t ORANGE_LED_PIN = 40;
+static const uint8_t BLUE_LED_PIN = 43;
+static const uint8_t GREEN_LED_PIN = 44;
 
 static const uint16_t LED_DISPLAY_TIME_MS = 10000;
 
@@ -53,7 +54,7 @@ void InitLedModule(void)
 
 void UpdateLedModule(void)
 {
-    currentColor = GetZoneColor();
+    currentColor = GetLEDColor();
 
     if (currentColor != lastColor)
     {
@@ -111,10 +112,9 @@ void UpdateLedModule(void)
 /* ****************************************************************************
 Vos propres fonctions sont creees ici
 **************************************************************************** */
-static enum Color_Zone GetZoneColor()
+static enum Color_Zone GetLEDColor()
 {
-    //TODO : Ajouter le code pour utiliser le module du capteur de couleur
-    return CZ_RED;
+    return GetZoneColor();
 }
 
 static void DisplayColor(uint8_t pin)
