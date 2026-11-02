@@ -7,8 +7,8 @@ struct resultat
   float pidG;
 };
 
-float PID(float, int, float, float, float, float, float &, float &);
-resultat PID_ligne(float, float, float, float, float &, float &);
+float pid(float, int, float, float, float, float, float &, float &);
+resultat pid_ligne(float, float, float, float, float &, float &);
 float calculVitesse(float);
 void avance(float);
 void arret(void);

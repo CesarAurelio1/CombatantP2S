@@ -14,7 +14,6 @@ Inclure les librairies de functions que vous voulez utiliser
 #include "pid.h"
 #include "ledModule.h"
 #include "AttenteIR.h"
-#include "remoteControlModule.h"
 #include "suiveurDeLigne.h"
 #include "couleur.h"
 #include "mur.h"
@@ -29,8 +28,6 @@ Variables globales et defines
 bool bumperArr;
 int vertpin = 48;
 int rougepin = 49;
-bool demandeDemarrage = false;
-bool demandeReveil = false;
 
 void setup(){
   BoardInit();
@@ -42,6 +39,10 @@ void setup(){
   pinMode(rougepin, INPUT);
   delay(100);
   beep(2);
+
+  // initialisation des servomoteurs
+  SERVO_Enable(0);
+  SERVO_Enable(1);
 
   MOTOR_SetSpeed(LEFT, 0);
   MOTOR_SetSpeed(RIGHT, 0);

@@ -2,10 +2,7 @@
 #include "pid.h"
 #include "suiveurDeLigne.h"
 #include <LibRobus.h>
-#include <Servo.h>
 
-Servo servo1;
-Servo servo2;
 uint8_t const SERVO_PIN1 = A4;
 uint8_t const SERVO_PIN2 = A6;
 uint8_t const CAPTEUR_PIN = A5;
@@ -17,13 +14,13 @@ uint8_t distance_avancer = 0;
 
 void fermer_pince()
 {
-  servo1.write(ANGLE_FERME);
+  SERVO_SetAngle(0, ANGLE_FERME);
   delay(200);
 }
 
 void ouvrir_pince()
 {
-  servo1.write(ANGLE_OUVERT);
+  SERVO_SetAngle(0, ANGLE_OUVERT);
   delay(200);
 }
 
@@ -31,7 +28,7 @@ void lever_pince()
 {
   for (int angle = 2; angle <= 90; angle += 2)
   {
-    servo2.write(angle);
+    SERVO_SetAngle(1, angle);
     delay(20);
   }
 

@@ -6,22 +6,30 @@
 const uint32_t DEMARRAGE = 0x807F8877;  // Code pour la demande de démarrage initiale du robot (0x11)
 const uint32_t REVEIL = 0x807F44BB;     // Code pour la demande de réveil du robot lors de la détection du bleu (0x22)
 
+// Demandes qui seront traitées par le programme principal
+bool demandeDemarrage = false;
+bool demandeReveil = false;
+
 // Lire la manette et activer la demande correspondante
 int lireManette(uint32_t message)
 {
     if (message == DEMARRAGE)
     {
         beep(2);
-        return 1; // Message reçu et demande correspondante activée
+        demandeDemarrage = true; // Remettre à false après traitement dans le programme principal
+        return 1;
     }
     else if (message == REVEIL)
     {
         beep(3);
-        return 2; // Message reçu et demande correspondante activée
+        demandeReveil = true; // Remettre à false après traitement dans le programme principal
+        return 2;
     }
     if (message != 0) {
-        return 0; // Message reçu, mais pas de demande correspondante
+        // Afficher le code pour vérifier ce que le robot reçoit
+        return 0;
     }
+    return 0;
 }
 
 // Fonction pour émettre un signal sonore avec le buzzer
