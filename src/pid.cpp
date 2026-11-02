@@ -40,7 +40,7 @@ static int suiveurCentre = A1;
 static int suiveurDroite = A2;
 
 
-float PID(float offset, int current, float target, float Kp, float Ki, float Kd, float &previous_error, float &integral) 
+float pid(float offset, int current, float target, float Kp, float Ki, float Kd, float &previous_error, float &integral) 
 {
   float error = target - current;
 
@@ -55,7 +55,7 @@ float PID(float offset, int current, float target, float Kp, float Ki, float Kd,
   return p + i + d + correctif;
 }
 
-resultat PID_ligne(float offset, float Kp, float Ki, float Kd, float &previous_error, float &integral) 
+resultat pid_ligne(float offset, float Kp, float Ki, float Kd, float &previous_error, float &integral) 
 {
   resultat r;
   float p = 0;
@@ -170,8 +170,8 @@ void avance(float distance) {
     offsetG = nombre_pasD - nombre_pasG;
     progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
     vitesse = calculVitesse(progression);
-    float pidD = vitesse + PID(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD);
-    float pidG = vitesse + PID(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG);
+    float pidD = vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD);
+    float pidG = vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG);
 
     MOTOR_SetSpeed(RIGHT, pidD);
     MOTOR_SetSpeed(LEFT, pidG);
@@ -212,34 +212,30 @@ void suivre_ligne()
 
   unsigned long prochain = millis();
 
-  while(couleur == 5)
-  {
-    float erreur = calcul_erreur();
-    
-    erreur = erreur * abs(erreur);
-    resultat correction = PID_ligne(erreur, KpL, KiL, KdL, previous_error, integral);
+  float erreur = calcul_erreur();
+  
+  erreur = erreur * abs(erreur);
+  resultat correction = pid_ligne(erreur, KpL, KiL, KdL, previous_error, integral);
 
-    float vitesseCourante = vitesse_max - 0.2 - (vitesse_max - vitesse_min) * abs(erreur/2);
+  float vitesseCourante = vitesse_max - 0.2 - (vitesse_max - vitesse_min) * abs(erreur/2);
 
-    float pidD = vitesseCourante + correction.pidD;
-    float pidG = vitesseCourante + correction.pidG;
+  float pidD = vitesseCourante + correction.pidD;
+  float pidG = vitesseCourante + correction.pidG;
 
-    pidD = constrain(pidD, -0.3, vitesse_max);
-    pidG = constrain(pidG, -0.3, vitesse_max);
+  pidD = constrain(pidD, -0.3, vitesse_max);
+  pidG = constrain(pidG, -0.3, vitesse_max);
 
-    MOTOR_SetSpeed(LEFT,pidG);
-    MOTOR_SetSpeed(RIGHT,pidD);
+  MOTOR_SetSpeed(LEFT,pidG);
+  MOTOR_SetSpeed(RIGHT,pidD);
 
-    static unsigned long dernierAffichage = 0;
-    if (millis() - dernierAffichage > 200) {
-      dernierAffichage = millis();
-      Serial.print("G: "); Serial.print(pidG);
-      Serial.print(" | D: "); Serial.println(pidD);
-    }
-
-    prochain += PERIODE_MS;
-    long attente = (long)(prochain - millis());
-    if (attente > 0) delay(attente);
+  static unsigned long dernierAffichage = 0;
+  if (millis() - dernierAffichage > 200) {
+    dernierAffichage = millis();
+    Serial.print("G: "); Serial.print(pidG);
+    Serial.print(" | D: "); Serial.println(pidD);
   }
-  arret();
+
+  prochain += PERIODE_MS;
+  long attente = (long)(prochain - millis());
+  if (attente > 0) delay(attente);
 }
