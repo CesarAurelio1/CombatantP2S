@@ -82,7 +82,7 @@ void loop() {
         }
         break;
     case CZ_GREEN:
-        // Code pour la zone verte PASSER LE TROU
+        avance(85);
         break;
     case CZ_OTHER:
         suivre_ligne();
