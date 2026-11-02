@@ -27,15 +27,6 @@ bool rouge = false;
 int etat = 0; 
 int etatPast = 0;
 
-uint8_t right = 0;
-uint8_t left = 1;
-
-int distance_case = 48; //cm
-uint8_t orientation = 0; // 0 = nord, 1 = est, 2 = sud, 3 = ouest
-uint8_t erreur_distance = 0;
-int position = 1; // commence sur la case 1, on imagine une map de 0 à 29, donc 30 cases
-uint16_t degree = 0;
-
 
 void beep(int count){
   for(int i=0;i<count;i++){
@@ -51,7 +42,6 @@ void setup(){
   BoardInit();
   Serial.begin(9600);
   
-  orientation = 0;
   //initialisation
   pinMode(vertpin, INPUT);
   pinMode(rougepin, INPUT);
