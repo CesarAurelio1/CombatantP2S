@@ -1,0 +1,58 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "C:/Users/Mapou/Desktop/projet_session/E_C/include",
+                "C:/Users/Mapou/Desktop/projet_session/E_C/src",
+                "C:/Users/Mapou/Desktop/projet_session/E_C/lib/LibRobUS-master/src",
+                "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/variants/mega",
+                "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "C:/Users/Mapou/Desktop/projet_session/E_C/include",
+                    "C:/Users/Mapou/Desktop/projet_session/E_C/src",
+                    "C:/Users/Mapou/Desktop/projet_session/E_C/lib/LibRobUS-master/src",
+                    "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/variants/mega",
+                    "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60200",
+                "ARDUINO_AVR_MEGA2560",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega2560__",
+                ""
+            ],
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++11",
+            "compilerPath": "C:/Users/Mapou/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerArgs": [
+                "-mmcu=atmega2560",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
