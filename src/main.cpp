@@ -15,6 +15,9 @@ Inclure les librairies de functions que vous voulez utiliser
 #include "ledModule.h"
 #include "AttenteIR.h"
 #include "remoteControlModule.h"
+#include "suiveurDeLigne.h"
+#include "couleur.h"
+#include "mur.h"
 
 /*
 Variables globales et defines
