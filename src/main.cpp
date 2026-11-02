@@ -18,6 +18,7 @@ Inclure les librairies de functions que vous voulez utiliser
 #include "suiveurDeLigne.h"
 #include "couleur.h"
 #include "mur.h"
+#include "pince.h"
 
 /*
 Variables globales et defines
@@ -33,16 +34,7 @@ bool rouge = false;
 int etat = 0; 
 int etatPast = 0;
 
-
-void beep(int count){
-  for(int i=0;i<count;i++){
-    AX_BuzzerON();
-    delay(100);
-    AX_BuzzerOFF();
-    delay(100);  
-  }
-  delay(400);
-}
+bool partie = 0;
 
 void setup(){
   BoardInit();
@@ -57,14 +49,20 @@ void setup(){
 
    MOTOR_SetSpeed(LEFT, 0);
   MOTOR_SetSpeed(RIGHT, 0);
-
-  Serial.println("Robot pret a recevoir la manette");
 }
 
 
 void loop() {
   UpdateLedModule();
-  // Lire la manette et activer la demande correspondante
-  lireManette(REMOTE_read());
+  if(partie == false)
+  {
+    while(lireManette(REMOTE_read()) != 1)
+    {
+      delay(10);
+    }
+    partie = true;
+  }
+  
+
   suivre_ligne();
 }
