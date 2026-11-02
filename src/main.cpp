@@ -63,6 +63,5 @@ void loop() {
     partie = true;
   }
   
-
   suivre_ligne();
 }
