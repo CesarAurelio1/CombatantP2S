@@ -205,7 +205,7 @@ float calcul_erreur()
   return derniere_erreur;
 }
 
-void followLine()
+void suivre_ligne()
 {
   float previous_error = 0;
   float integral = 0;

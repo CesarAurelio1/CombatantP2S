@@ -20,7 +20,7 @@ void augmenter_Kd(float);
 void diminuer_Kd(float);
 void augmenter_Ksync(float);
 void diminuer_Ksync(float);
-void followLine(void);
+void suivre_ligne(void);
 float calcul_erreur(void);
 
 #endif
