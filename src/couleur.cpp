@@ -28,11 +28,11 @@ struct ColorReference {
 
 // Adjust these values after placing the sensor correctly on the robot.
 static const ColorReference REFERENCES[] = {
-  { CZ_ORANGE, {5613,  4985, 3242} },
-  { CZ_YELLOW, {8280,  8951, 4827} },
-  { CZ_RED,    {9565,  6866, 5800} },
-  { CZ_GREEN,  {7081, 10110, 7925} },
-  { CZ_BLUE,   {3770,  6375, 6211} }
+  { CZ_RED,    {10971, 8295, 6981} },
+  { CZ_YELLOW, {9348, 10521, 5638} },
+  { CZ_ORANGE, {8870, 7558, 4623} },
+  { CZ_BLUE,   {3940, 6733, 6518} },
+  { CZ_GREEN,  {6466, 9159, 7228} }
 };
 
 // Number of entries in the table (computed automatically, so adding a color
@@ -45,7 +45,7 @@ Color detection
 enum Color_Zone detect_color(const uint16_t color_values[]) {
     // Largest distance (in raw sensor units) we still accept as a match.
     // Adjust this threshold while testing.
-    const uint16_t max_color_distance = 2000;
+    const uint16_t max_color_distance = 3000;
 
     // We compare SQUARED distances to avoid computing a square root (slow on
     // an Arduino). So the threshold must be squared too.
@@ -114,10 +114,10 @@ enum Color_Zone GetZoneColor() {
     colorSensor.getRawData(&red, &green, &blue, &clear);
 
     // Uncomment to see the raw values while calibrating the references.
-    // Serial.print("RGB( ");
-    // Serial.print(red);   Serial.print(", ");
-    // Serial.print(green); Serial.print(", ");
-    // Serial.print(blue);  Serial.println(" )");
+     Serial.print("RGB( ");
+     Serial.print(red);   Serial.print(", ");
+     Serial.print(green); Serial.print(", ");
+     Serial.print(blue);  Serial.println(" )");
 
     // Pack the three channels in an array and find the closest zone.
     uint16_t color_values[] = {red, green, blue};
