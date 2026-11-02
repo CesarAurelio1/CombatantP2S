@@ -7,6 +7,8 @@
 
 void followLine(float vitesse_de_croisiere, int (*condition)());
 
+void turn_degrees(float, bool);
+
 extern float Kp_suiveur;
 extern float Ki_suiveur;
 extern float Kd_suiveur;
