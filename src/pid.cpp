@@ -15,7 +15,7 @@ static float Ki = 0.00005;
 static float Kd = 0.00005;
 static float Ksync = 0.0005;
 
-static float KpL = 0.3;
+static float KpL = 0.4;
 static float KiL = 0.0;
 static float KdL = 0.0;
 
