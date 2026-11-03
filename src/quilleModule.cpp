@@ -34,19 +34,15 @@ static void Rotate(void);
 
 
 
-static const uint8_t IR_SENSOR_1_PIN = A0;//A0 à A3 en fonction du branchement
-static const uint8_t IR_SENSOR_2_PIN = A1;//A0 à A3 en fonction du branchement
+static const uint8_t IR_SENSOR_1_PIN = A3;//A0 à A3 en fonction du branchement
 static const uint8_t ROTATION_ANGLE = 20;
-static const uint8_t MIN_DETECTION_VALUE = 80;
+static const uint8_t MIN_DETECTION_VALUE = 180;
 static const uint8_t FORWARD_MOVEMENT_VALUE_CM = 50;
 
 static bool moduleExecutionCompleted = false;
-static struct QuillleModuleData_t moduleData = {.irSensor1Value = 0, 
-                                                .irSensor2Value = 0, 
-                                                .irSensor1Index = 0, 
-                                                .irSensor2Index = 1, 
-                                                .irSensor1Pin = IR_SENSOR_1_PIN, 
-                                                .irSensor2Pin = IR_SENSOR_2_PIN,
+static struct QuillleModuleData_t moduleData = {.irSensor1Value = 0,
+                                                .irSensor1Index = 0,
+                                                .irSensor1Pin = IR_SENSOR_1_PIN,
                                                 .quilleFound = false,
                                                 .quilleKnockOver = false};
 
@@ -54,7 +50,6 @@ static struct QuillleModuleData_t moduleData = {.irSensor1Value = 0,
 void InitQuilleModule(void)
 {
     pinMode(moduleData.irSensor1Pin, INPUT);
-    pinMode(moduleData.irSensor2Pin, INPUT);
 }
 
 void ExecuteQuilleModule(void)
@@ -93,12 +88,18 @@ void ExecuteQuilleModule(void)
 static void ReadIRSensor(void)
 {
     moduleData.irSensor1Value = ROBUS_ReadIR(moduleData.irSensor1Index);
-    moduleData.irSensor2Value = ROBUS_ReadIR(moduleData.irSensor2Index);
+
+    //Correction pour le capteur de distance, parfois la valeur lu à distance saute 
+    //jusqu'à une valeur de 900 à 1000 qu<on doit filtrer.
+    if (moduleData.irSensor1Value > 600)
+    {
+        moduleData.irSensor1Value = 100;
+    }
 }
 
 static void ProcessIRSensorData(void)
 {
-    if (moduleData.irSensor1Value > MIN_DETECTION_VALUE || moduleData.irSensor2Value > MIN_DETECTION_VALUE)//TODO : calibrer pour touver la bonne valeur de distance
+    if (moduleData.irSensor1Value > MIN_DETECTION_VALUE )//TODO : calibrer pour touver la bonne valeur de distance
     {
         moduleData.quilleFound = true;
     }
