@@ -186,6 +186,58 @@ void avance(float distance) {
   arret();
 }
 
+void recule(float distance) {
+  progression = 0;
+  previous_errorD = 0;
+  previous_errorG = 0;
+  integralD = 0;
+  integralG = 0;
+  nombre_pasD = 0;
+  nombre_pasG = 0;
+
+  float offsetD = 0;
+  float offsetG = 0;
+
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+
+  unsigned long prochain = millis();
+    
+  float cible = (distance / circ_roue) * pulses_per_revolution;
+
+  while (nombre_pasD < cible || nombre_pasG < cible) {
+
+    if (nombre_pasD > cible)
+    {
+      MOTOR_SetSpeed(RIGHT, 0);
+    }
+    
+    else if (nombre_pasG > cible)
+    {
+      MOTOR_SetSpeed(LEFT, 0);
+    }
+
+    offsetD = nombre_pasG - nombre_pasD;
+    offsetG = nombre_pasD - nombre_pasG;
+    progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
+    vitesse = calculVitesse(progression);
+    float pidD = vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD);
+    float pidG = vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG);
+
+    MOTOR_SetSpeed(RIGHT, -pidD);
+    MOTOR_SetSpeed(LEFT, -pidG);
+
+    nombre_pasD += labs(ENCODER_ReadReset(RIGHT));
+    nombre_pasG += labs(ENCODER_ReadReset(LEFT));
+
+    prochain += PERIODE_MS;
+    long attente = (long)(prochain - millis());
+    if (attente > 0) delay(attente);
+  }
+
+  arret();
+}
+
 static float derniere_erreur = 0;
 
 // À mesurer : valeurs lues HORS ligne (blanc) et SUR la ligne, pour chaque capteur
