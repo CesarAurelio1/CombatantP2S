@@ -115,7 +115,7 @@ static PID_return PID(float vitesse_cible, float erreur, long &integrale, float 
   return vitesses_sortie;
 }
 
-void followLine(float vitesse_de_croisiere, int (*condition)())
+void followLine(float vitesse_de_croisiere, String (*condition)())
 {
   /*
   Suit la ligne a vitesse constante
@@ -147,7 +147,7 @@ void followLine(float vitesse_de_croisiere, int (*condition)())
   float ancienne_erreur = 0;
   float start_time = timestamp;
   
-  while (condition() == 5 || timestamp - start_time < 2000)
+  while (condition() == "CZ_OTHER" || timestamp - start_time < 2000)
   {
     erreur = calcul_erreur();
     PID_return vitesses = PID(vitesse_de_croisiere, erreur, integrale, ancienne_erreur, timestamp, Kp_suiveur, Ki_suiveur, Kd_suiveur);

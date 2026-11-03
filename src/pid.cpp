@@ -15,7 +15,7 @@ static float Ki = 0.00005;
 static float Kd = 0.00005;
 static float Ksync = 0.0005;
 
-static float KpL = 0.4;
+static float KpL = 0.25;
 static float KiL = 0.0;
 static float KdL = 0.0;
 
@@ -241,9 +241,9 @@ void recule(float distance) {
 static float derniere_erreur = 0;
 
 // À mesurer : valeurs lues HORS ligne (blanc) et SUR la ligne, pour chaque capteur
-static float minG = 0.50, maxG = 0.90;
-static float minC = 0.50, maxC = 0.90;
-static float minD = 0.50, maxD = 0.90;
+static float minG = 0.10, maxG = 0.90;
+static float minC = 0.10, maxC = 0.90;
+static float minD = 0.12, maxD = 0.90;
 
 static float norm(int brut, float mn, float mx)
 {
@@ -251,21 +251,35 @@ static float norm(int brut, float mn, float mx)
   return constrain(v, 0.0, 1.0);          // 0 = hors ligne, 1 = sur la ligne
 }
 
-float calcul_erreur()
-{
+float calcul_erreur() {
   float g = norm(analogRead(suiveurGauche), minG, maxG);
   float m = norm(analogRead(suiveurCentre), minC, maxC);
   float d = norm(analogRead(suiveurDroite), minD, maxD);
 
   float somme = g + m + d;
 
-  if (somme < 0.2) {                       // vraiment perdu
-    return (derniere_erreur >= 0) ? 1.0 : -1.0;
+  // Si perte de ligne : conserver le dernier rayon de braquage sans saut
+  if (somme < 0.15) {
+    return derniere_erreur;
   }
 
-  derniere_erreur = (d - g);       // mise à jour seulement si la ligne est vue
+  // Calcul d'erreur centré continu
+  float err_brute = (d - g);
+
+  // Application d'un lissage continu au lieu d'un saut discontinu
+  const float deadband = 0.05;
+  if (fabs(err_brute) < deadband) {
+    err_brute = 0.0;
+  } else if (err_brute > 0) {
+    err_brute -= deadband;
+  } else {
+    err_brute += deadband;
+  }
+
+  derniere_erreur = err_brute;
   return derniere_erreur;
 }
+
 void suivre_ligne()
 {
   float previous_error = 0;
