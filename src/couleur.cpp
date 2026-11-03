@@ -45,7 +45,7 @@ Color detection
 enum Color_Zone detect_color(const uint16_t color_values[]) {
     // Largest distance (in raw sensor units) we still accept as a match.
     // Adjust this threshold while testing.
-    const uint16_t max_color_distance = 3000;
+    const uint16_t max_color_distance = 2000;
 
     // We compare SQUARED distances to avoid computing a square root (slow on
     // an Arduino). So the threshold must be squared too.

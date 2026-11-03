@@ -39,7 +39,7 @@ static const uint16_t SQUARE_SIZE = 500;
 static const uint16_t STEPS_PER_REVOLUTION = 3200;
 static const uint16_t MAX_SPEED_PPS = 10666;
 static const float FORWARD_SPEED = 0.5;
-static const float TURN_SPEED = 0.3;
+static const float TURN_SPEED = 0.1;
 
 static const uint8_t STEPS_ACCURACY_THRESHOLD = 3;
 static const float TURN_RATIO = 0.3205; // Constante valant un facteur magique * 0.25

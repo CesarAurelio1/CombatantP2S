@@ -50,16 +50,16 @@ void setup(){
 
 
 void loop() {
-  UpdateLedModule();
-  if(demandeDemarrage == false)
-  {
-    while(lireManette(REMOTE_read()) != 1)
-    {
-      delay(10);
-    }
-    demandeDemarrage = true;
-  }
-
+  // UpdateLedModule();
+//   if(demandeDemarrage == false)
+//   {
+//     while(lireManette(REMOTE_read()) != 1)
+//     {
+//       delay(10);
+//     }
+//     demandeDemarrage = true;
+//   }
+  arret();
   switch(GetZoneColor())
   {
     case CZ_RED: // (ROSE)

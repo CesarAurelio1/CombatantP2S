@@ -53,7 +53,7 @@ void trouver_verre()
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
 
-  if (distance_capteur > 231)
+  if (distance_capteur > 200 && distance_capteur < 600)
   {
     distance_capteur = analogRead(CAPTEUR_PIN);
     distance_avancer = ((distance_capteur*100)/532);

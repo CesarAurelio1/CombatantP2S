@@ -4,7 +4,7 @@
 
 static float progression = 0;
 
-static const unsigned long PERIODE_MS = 20;
+static const unsigned long PERIODE_MS = 10;
 
 static float previous_errorD = 0;
 static float previous_errorG = 0;
@@ -31,7 +31,7 @@ static long nombre_pasG = 0;
 static int pulses_per_revolution = 3200;
 
 static float vitesse_min = 0.1;
-static float vitesse_max = 0.5;
+static float vitesse_max = 0.3;
 static float vitesse = 0;
 
 static int suiveurGauche = A0;
@@ -188,58 +188,70 @@ void avance(float distance) {
 
 static float derniere_erreur = 0;
 
+// À mesurer : valeurs lues HORS ligne (blanc) et SUR la ligne, pour chaque capteur
+static float minG = 0.50, maxG = 0.90;
+static float minC = 0.50, maxC = 0.90;
+static float minD = 0.50, maxD = 0.90;
+
+static float norm(int brut, float mn, float mx)
+{
+  float v = (brut / 1024.0 - mn) / (mx - mn);
+  return constrain(v, 0.0, 1.0);          // 0 = hors ligne, 1 = sur la ligne
+}
+
 float calcul_erreur()
 {
-  float g = analogRead(suiveurGauche) / 1024.0;
-  float m = analogRead(suiveurCentre) / 1024.0;
-  float d = analogRead(suiveurDroite) / 1024.0;
+  float g = norm(analogRead(suiveurGauche), minG, maxG);
+  float m = norm(analogRead(suiveurCentre), minC, maxC);
+  float d = norm(analogRead(suiveurDroite), minD, maxD);
 
   float somme = g + m + d;
 
-  if (somme < 0.15) {
-    return (derniere_erreur >= 0) ? 0.5 : -0.5;
+  if (somme < 0.2) {                       // vraiment perdu
+    return (derniere_erreur >= 0) ? 1.0 : -1.0;
   }
 
-  derniere_erreur = (d - g) / somme;
+  derniere_erreur = (d - g);       // mise à jour seulement si la ligne est vue
   return derniere_erreur;
 }
-
 void suivre_ligne()
 {
   float previous_error = 0;
   float integral = 0;
   float erreur = 0;
+  float erreurFiltree = 0;
+  float a = 0.5; // 0 = quadratique, 1 = linéaire (commence à 0.5)
 
   unsigned long prochain = millis();
+  unsigned long dernierAffichage = 0;
 
-  while (GetZoneColor() == CZ_OTHER) 
+  while (GetZoneColor() == CZ_OTHER)
   {
     erreur = calcul_erreur();
-  
-    erreur = erreur * abs(erreur);
-    resultat correction = pid_ligne(erreur, KpL, KiL, KdL, previous_error, integral);
+    resultat correction;
+    
+    correction = pid_ligne(erreur, KpL, KiL, KdL, previous_error, integral);
+    
 
-    float vitesseCourante = vitesse_max - 0.2 - (vitesse_max - vitesse_min) * abs(erreur/2);
+    float vitesseCourante = vitesse_max - 0.1 - (vitesse_max - vitesse_min) * (fabs(erreur)/2);
 
-    float pidD = vitesseCourante + correction.pidD;
-    float pidG = vitesseCourante + correction.pidG;
+    float pidD = constrain(vitesseCourante + correction.pidD, -0.1, vitesse_max);
+    float pidG = constrain(vitesseCourante + correction.pidG, -0.1, vitesse_max);
 
-    pidD = constrain(pidD, -0.3, vitesse_max);
-    pidG = constrain(pidG, -0.3, vitesse_max);
+    MOTOR_SetSpeed(LEFT, pidG);
+    MOTOR_SetSpeed(RIGHT, pidD);
 
-    MOTOR_SetSpeed(LEFT,pidG);
-    MOTOR_SetSpeed(RIGHT,pidD);
-
-    static unsigned long dernierAffichage = 0;
     if (millis() - dernierAffichage > 200) {
       dernierAffichage = millis();
       Serial.print("G: "); Serial.print(pidG);
       Serial.print(" | D: "); Serial.println(pidD);
     }
+
+    // DANS la boucle : cadence fixe de 20 ms
+    prochain += PERIODE_MS;
+    long attente = (long)(prochain - millis());
+    if (attente > 0) delay(attente);
   }
 
-  prochain += PERIODE_MS;
-  long attente = (long)(prochain - millis());
-  if (attente > 0) delay(attente);
-  return;
+  arret();
 }
