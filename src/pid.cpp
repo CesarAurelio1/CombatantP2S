@@ -1,5 +1,6 @@
 #include "pid.h"
 #include <LibRobus.h>
+#include "couleur.h"
 
 static float progression = 0;
 
@@ -28,8 +29,6 @@ static float circ_cercle = d_cercle * PI; // cm
 static long nombre_pasD = 0;
 static long nombre_pasG = 0;
 static int pulses_per_revolution = 3200;
-
-static int couleur = 5;
 
 static float vitesse_min = 0.1;
 static float vitesse_max = 0.5;
@@ -209,33 +208,38 @@ void suivre_ligne()
 {
   float previous_error = 0;
   float integral = 0;
+  float erreur = 0;
 
   unsigned long prochain = millis();
 
-  float erreur = calcul_erreur();
+  while (GetZoneColor() == CZ_OTHER) 
+  {
+    erreur = calcul_erreur();
   
-  erreur = erreur * abs(erreur);
-  resultat correction = pid_ligne(erreur, KpL, KiL, KdL, previous_error, integral);
+    erreur = erreur * abs(erreur);
+    resultat correction = pid_ligne(erreur, KpL, KiL, KdL, previous_error, integral);
 
-  float vitesseCourante = vitesse_max - 0.2 - (vitesse_max - vitesse_min) * abs(erreur/2);
+    float vitesseCourante = vitesse_max - 0.2 - (vitesse_max - vitesse_min) * abs(erreur/2);
 
-  float pidD = vitesseCourante + correction.pidD;
-  float pidG = vitesseCourante + correction.pidG;
+    float pidD = vitesseCourante + correction.pidD;
+    float pidG = vitesseCourante + correction.pidG;
 
-  pidD = constrain(pidD, -0.3, vitesse_max);
-  pidG = constrain(pidG, -0.3, vitesse_max);
+    pidD = constrain(pidD, -0.3, vitesse_max);
+    pidG = constrain(pidG, -0.3, vitesse_max);
 
-  MOTOR_SetSpeed(LEFT,pidG);
-  MOTOR_SetSpeed(RIGHT,pidD);
+    MOTOR_SetSpeed(LEFT,pidG);
+    MOTOR_SetSpeed(RIGHT,pidD);
 
-  static unsigned long dernierAffichage = 0;
-  if (millis() - dernierAffichage > 200) {
-    dernierAffichage = millis();
-    Serial.print("G: "); Serial.print(pidG);
-    Serial.print(" | D: "); Serial.println(pidD);
+    static unsigned long dernierAffichage = 0;
+    if (millis() - dernierAffichage > 200) {
+      dernierAffichage = millis();
+      Serial.print("G: "); Serial.print(pidG);
+      Serial.print(" | D: "); Serial.println(pidD);
+    }
   }
 
   prochain += PERIODE_MS;
   long attente = (long)(prochain - millis());
   if (attente > 0) delay(attente);
+  return;
 }

@@ -45,9 +45,14 @@ void trouver_verre()
   while (distance_capteur < 231)
   {
     distance_capteur = analogRead(CAPTEUR_PIN);
-    MOTOR_SetSpeed(RIGHT, 0.2);
-    MOTOR_SetSpeed(LEFT, -0.2);
+    MOTOR_SetSpeed(RIGHT, 0.1);
+    MOTOR_SetSpeed(LEFT, -0.1);
+    delay(10);
   }
+
+  MOTOR_SetSpeed(RIGHT, 0);
+  MOTOR_SetSpeed(LEFT, 0);
+
   if (distance_capteur > 231)
   {
     distance_capteur = analogRead(CAPTEUR_PIN);
