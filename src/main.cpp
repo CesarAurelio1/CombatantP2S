@@ -18,7 +18,7 @@ Inclure les librairies de functions que vous voulez utiliser
 #include "couleur.h"
 #include "mur.h"
 #include "pince.h"
-//#include "quilleModule.h"
+#include "quilleModule.h"
 
 /*
 Variables globales et defines
@@ -33,7 +33,7 @@ int rougepin = 49;
 void setup(){
   BoardInit();
   InitLedModule();
-  //InitQuilleModule();
+  InitQuilleModule();
   Serial.begin(9600);
   
   //initialisation
@@ -51,8 +51,9 @@ void setup(){
 }
 
 
-void loop() {
-  // UpdateLedModule();
+void loop() 
+{
+    UpdateLedModule();
 //   if(demandeDemarrage == false)
 //   {
 //     while(lireManette(REMOTE_read()) != 1)
@@ -65,9 +66,7 @@ void loop() {
   switch(GetZoneColor())
   {
     case CZ_RED: // (ROSE)
-    //ExecuteQuilleModule();
-    delay(5000);
-        // Code pour la zone rouge TOMBER LA QUILLE
+        ExecuteQuilleModule();
         break;
     case CZ_YELLOW:
         contourner_mur(35);
@@ -81,7 +80,6 @@ void loop() {
         {
             while(lireManette(REMOTE_read()) != 2)
             {
-                beep(1); // Prouver que qqch est recu mais que ce n'est pas la bonne demande
                 delay(10);
             }
             demandeReveil = true;
