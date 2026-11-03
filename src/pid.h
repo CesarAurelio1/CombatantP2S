@@ -11,6 +11,7 @@ float pid(float, int, float, float, float, float, float &, float &);
 resultat pid_ligne(float, float, float, float, float &, float &);
 float calculVitesse(float);
 void avance(float);
+void recule(float);
 void arret(void);
 void augmenter_Kp(float);
 void diminuer_Kp(float);
