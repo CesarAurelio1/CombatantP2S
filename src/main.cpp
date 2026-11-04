@@ -26,9 +26,13 @@ Variables globales et defines
  -> L'ensemble des fonctions y ont acces
 */
 
+void SleepRobot(void);
+
 bool bumperArr;
 int vertpin = 48;
 int rougepin = 49;
+bool sleep = true;
+bool start = false;
 
 void setup(){
   BoardInit();
@@ -50,6 +54,8 @@ void setup(){
   MOTOR_SetSpeed(RIGHT, 0);
 
   analogReference(INTERNAL2V56);
+
+  SleepRobot();
 }
 
 
@@ -64,6 +70,38 @@ void loop()
     }
     demandeDemarrage = true;
   }
+=======
+    if (sleep == true)
+    {
+        lireManette(REMOTE_read());
+
+        if (demandeReveil == true)
+        {
+            sleep = false;
+            demandeReveil = false;
+        }
+        
+        delay(10);
+
+        return;
+    }
+    if (start == false)
+    {
+        lireManette(REMOTE_read());
+
+        if (demandeDemarrage == true)
+        {
+            start = true;
+            demandeDemarrage = false;
+        }
+
+        delay(10);
+        
+        return;
+    }
+
+    UpdateLedModule();
+
   arret();
   switch(GetZoneColor())
   {
@@ -94,8 +132,10 @@ void loop()
         }
         demandeReveil = true;
       }
+      SleepRobot();
       break;
     case CZ_GREEN:
+      turn_degrees(10, 1);
       avance(100);
       turn_degrees(10, 1);
       break;
@@ -107,4 +147,11 @@ void loop()
       break;
   }
   delay(10);
+}
+
+void SleepRobot(void)
+{
+    sleep = true;
+    start = false;
+    arret();
 }
