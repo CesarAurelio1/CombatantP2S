@@ -48,6 +48,8 @@ void setup(){
 
   MOTOR_SetSpeed(LEFT, 0);
   MOTOR_SetSpeed(RIGHT, 0);
+
+  analogReference(INTERNAL2V56);
 }
 
 
@@ -72,9 +74,9 @@ void loop()
         contourner_mur(35);
         break;
     case CZ_ORANGE:
-        trouver_verre();
-        delay(10);
-        break;
+        // trouver_verre();
+        // delay(10);
+        // break;
     case CZ_BLUE:
         if(demandeReveil == false)
         {
@@ -89,11 +91,11 @@ void loop()
         avance(85);
         break;
     case CZ_OTHER:
-        suivre_ligne();
+        followLine(0.17, GetZoneColor);
         break;
     default:
         arret(); // Temporaire, à remplacer par le code approprié pour gérer les autres couleurs
         break;
   }
-  delay(10);
+
 }

@@ -5,6 +5,7 @@ Code par Gael S.
 */
 
 #include "suiveurDeLigne.h"
+#include "couleur.h"
 
 #include <Arduino.h>
 #include <LibRobus.h>
@@ -15,9 +16,9 @@ static int suiveurGauche = A0;
 static int suiveurCentre = A1;
 static int suiveurDroite = A2;
 
-float Kp_suiveur = 11;
-float Ki_suiveur = 0;
-float Kd_suiveur = 0;
+float Kp_suiveur = 5;
+float Ki_suiveur = 0.0001;
+float Kd_suiveur = 0.2;
 
 struct PID_return
 {
@@ -103,7 +104,34 @@ static PID_return PID(float vitesse_cible, float erreur, long &integrale, float 
   return vitesses_sortie;
 }
 
-void followLine(float vitesse_de_croisiere, String (*condition)())
+void turn_degrees(int angle, bool sens)
+{
+  ENCODER_Reset(LEFT);
+  ENCODER_Reset(RIGHT);
+
+  float pulses_per_revolution = 3200;
+  int nombre_pasD = 0;
+  int nombre_pasG = 0;
+  float d_roue = 7.72; // cm
+  float circ_roue = d_roue * 3.141592653589793238462643383279; // cm
+  float d_cercle = 18.1; // cm
+  float circ_cercle = d_cercle * 3.14152653589793238462643383279; // cm
+
+  float cible = (circ_cercle / circ_roue) * pulses_per_revolution * (angle / 360.0);
+
+  while (nombre_pasD < cible || nombre_pasG < cible)
+  {
+    MOTOR_SetSpeed(RIGHT, -0.5);
+    MOTOR_SetSpeed(LEFT, 0.5);
+
+    nombre_pasD += ENCODER_ReadReset(RIGHT);
+    nombre_pasG += ENCODER_ReadReset(LEFT);
+
+    delay(10);
+  }
+}
+
+void followLine(float vitesse_de_croisiere, enum Color_Zone (*condition)())
 {
   /*
   Suit la ligne a vitesse constante
@@ -135,8 +163,9 @@ void followLine(float vitesse_de_croisiere, String (*condition)())
   float ancienne_erreur = 0;
   float start_time = timestamp;
 
-  while (condition() == "CZ_OTHER" || timestamp - start_time < 2000)
+  while (condition() == CZ_OTHER || timestamp - start_time < 2000)
   {
+    Serial.println(timestamp);
     erreur = calcul_erreur();
     PID_return vitesses = PID(vitesse_de_croisiere, erreur, integrale, ancienne_erreur, timestamp, Kp_suiveur, Ki_suiveur, Kd_suiveur);
     vitesse_M1 = vitesses.vitesse1;
@@ -145,7 +174,7 @@ void followLine(float vitesse_de_croisiere, String (*condition)())
     vitesse_M2 = limite_variation_vitesse(vitesse_M2, vitesse_precedant_M2);
     MOTOR_SetSpeed(LEFT, vitesse_M1);
     MOTOR_SetSpeed(RIGHT, vitesse_M2);
-    delay(5);
+    delay(1);
   }
   while (vitesse_M1 + vitesse_M2 > 0.05)
   {
@@ -157,7 +186,7 @@ void followLine(float vitesse_de_croisiere, String (*condition)())
     vitesse_M2 = limite_variation_vitesse(vitesse_M2, vitesse_precedant_M2);
     MOTOR_SetSpeed(LEFT, vitesse_M1);
     MOTOR_SetSpeed(RIGHT, vitesse_M2);
-    delay(5);
+    delay(1);
   }
   MOTOR_SetSpeed(LEFT, 0);
   MOTOR_SetSpeed(RIGHT, 0);
