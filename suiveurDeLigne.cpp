@@ -25,6 +25,29 @@ struct PID_return
   float vitesse2;
 };
 
+
+void CLAW_init(){
+  SERVO_Enable(0);
+  SERVO_Enable(1); 
+  SERVO_SetAngle(0, 30);
+  SERVO_SetAngle(1, 0);
+  delay(500);
+}
+
+void CLAW_open(){
+  SERVO_SetAngle(0, 30);
+  SERVO_SetAngle(1, 0);
+  delay(500);
+}
+
+void CLAW_close(){
+  SERVO_SetAngle(1, 150);
+  delay(500);
+  SERVO_SetAngle(0, 60);
+  delay(500);
+}
+
+
 static float calcul_erreur()
 {
   float erreur = 0;
