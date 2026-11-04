@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <couleur.h>
+#include "couleur.h"
 #include <Adafruit_TCS34725.h>
 
 /* ****************************************************************************
@@ -113,9 +113,17 @@ enum Color_Zone GetZoneColor() {
     // without a color filter; we don't use it but the function requires it.
     colorSensor.getRawData(&red, &green, &blue, &clear);
 
+    // Uncomment to see the raw values while calibrating the references.
+     Serial.print("RGB( ");
+     Serial.print(red);   Serial.print(", ");
+     Serial.print(green); Serial.print(", ");
+     Serial.print(blue);  Serial.println(" )");
+
     // Pack the three channels in an array and find the closest zone.
     uint16_t color_values[] = {red, green, blue};
     enum Color_Zone zone = detect_color(color_values);
+
+    Serial.println(zone); // Testing only: prints the enum value (0 = CZ_RED, ...)
 
     return zone;
 }

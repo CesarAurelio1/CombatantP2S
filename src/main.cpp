@@ -74,9 +74,9 @@ void loop()
         contourner_mur(35);
         break;
     case CZ_ORANGE:
-        // trouver_verre();
-        // delay(10);
-        // break;
+        trouver_verre();
+        delay(10);
+        break;
     case CZ_BLUE:
         if(demandeReveil == false)
         {
@@ -97,5 +97,5 @@ void loop()
         arret(); // Temporaire, à remplacer par le code approprié pour gérer les autres couleurs
         break;
   }
-
+  delay(10);
 }
