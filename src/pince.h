@@ -4,5 +4,6 @@
 void fermer_pince();
 void ouvrir_pince();
 void trouver_verre();
+void trouver_quille();
 
 #endif

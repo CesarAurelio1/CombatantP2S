@@ -5,15 +5,16 @@
 
 void contourner_mur(float distance)
 {
-    turn_degrees(90, true);
+    turn_degrees(100, 1);
     delay(10);
     avance(distance);
     delay(10);
-    turn_degrees(90, false);
+    turn_degrees(90, 0);
+    delay(10);
+    avance(distance + 10);
+    delay(10);
+    turn_degrees(95, 0);
     delay(10);
     avance(distance);
-    delay(10);
-    turn_degrees(90, false);
-    delay(10);
-    avance(distance);
+    turn_degrees(95, 1);
 }

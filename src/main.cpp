@@ -43,8 +43,8 @@ void setup(){
   beep(2);
 
   // initialisation des servomoteurs
-  SERVO_Enable(0);
-  SERVO_Enable(1);
+  CLAW_init();
+  CLAW_open();
 
   MOTOR_SetSpeed(LEFT, 0);
   MOTOR_SetSpeed(RIGHT, 0);
@@ -55,47 +55,56 @@ void setup(){
 
 void loop() 
 {
-    UpdateLedModule();
-//   if(demandeDemarrage == false)
-//   {
-//     while(lireManette(REMOTE_read()) != 1)
-//     {
-//       delay(10);
-//     }
-//     demandeDemarrage = true;
-//   }
+  UpdateLedModule();
+  if(demandeDemarrage == false)
+  {
+    while(lireManette(REMOTE_read()) != 1)
+    {
+      delay(10);
+    }
+    demandeDemarrage = true;
+  }
   arret();
   switch(GetZoneColor())
   {
     case CZ_RED: // (ROSE)
-        ExecuteQuilleModule();
-        break;
+      trouver_quille();
+      followLine(0.17, GetZoneColor);
+
+      break;
     case CZ_YELLOW:
-        contourner_mur(35);
-        break;
+      contourner_mur(60);
+      followLine(0.17, GetZoneColor);
+
+      break;
     case CZ_ORANGE:
-        trouver_verre();
-        delay(10);
+      CLAW_open();
+      trouver_verre();
+      delay(10);
+      followLine(0.17, GetZoneColor);
+
         break;
     case CZ_BLUE:
-        if(demandeReveil == false)
+      if(demandeReveil == false)
+      {
+        arret();
+        while(lireManette(REMOTE_read()) != 2)
         {
-            while(lireManette(REMOTE_read()) != 2)
-            {
-                delay(10);
-            }
-            demandeReveil = true;
+            delay(10);
         }
-        break;
+        demandeReveil = true;
+      }
+      break;
     case CZ_GREEN:
-        avance(85);
-        break;
+      avance(100);
+      turn_degrees(10, 1);
+      break;
     case CZ_OTHER:
-        followLine(0.17, GetZoneColor);
-        break;
+      followLine(0.17, GetZoneColor);
+      break;
     default:
-        arret(); // Temporaire, à remplacer par le code approprié pour gérer les autres couleurs
-        break;
+      arret(); // Temporaire, à remplacer par le code approprié pour gérer les autres couleurs
+      break;
   }
   delay(10);
 }
