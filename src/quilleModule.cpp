@@ -35,7 +35,7 @@ static void ReverseMovement(void);
 
 static const uint8_t IR_SENSOR_1_PIN = A3;//A0 à A3 en fonction du branchement
 static const uint8_t ROTATION_ANGLE = 20;
-static const uint8_t MIN_DETECTION_VALUE = 180;
+static const uint8_t MIN_DETECTION_VALUE = 400;
 static const uint8_t FORWARD_MOVEMENT_VALUE_CM = 50;
 
 static bool moduleExecutionCompleted = false;
@@ -76,14 +76,14 @@ void ExecuteQuilleModule(void)
 
         if (moduleData.quilleFound && !moduleData.quilleKnockOver)
         {
-            MoveForward();
+            ReverseMovement();
             
             moduleData.quilleKnockOver = true;
         }
 
         if (moduleData.quilleKnockOver && !moduleExecutionCompleted)
         {
-            ReverseMovement();
+            MoveForward();
 
             moduleExecutionCompleted = true;
         }

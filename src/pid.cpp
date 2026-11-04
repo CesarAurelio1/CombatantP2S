@@ -169,8 +169,8 @@ void avance(float distance) {
     offsetG = nombre_pasD - nombre_pasG;
     progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
     vitesse = calculVitesse(progression);
-    float pidD = vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD);
-    float pidG = vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG);
+    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD),-0.3, vitesse_max);
+    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max);
 
     MOTOR_SetSpeed(RIGHT, pidD);
     MOTOR_SetSpeed(LEFT, pidG);
@@ -221,8 +221,8 @@ void recule(float distance) {
     offsetG = nombre_pasD - nombre_pasG;
     progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
     vitesse = calculVitesse(progression);
-    float pidD = vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD);
-    float pidG = vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG);
+    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD), -0.3, vitesse_max);
+    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max);
 
     MOTOR_SetSpeed(RIGHT, -pidD);
     MOTOR_SetSpeed(LEFT, -pidG);
