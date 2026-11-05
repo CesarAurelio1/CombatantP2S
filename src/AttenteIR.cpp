@@ -32,6 +32,29 @@ int lireManette(uint32_t message)
     return 0;
 }
 
+// Bloque jusqu'a recevoir REVEIL puis DEMARRAGE, dans cet ordre.
+// Un DEMARRAGE recu avant REVEIL est ignore.
+void attendreReveilPuisDemarrage()
+{
+    bool reveilRecu = false;
+
+    while (true)
+    {
+        int code = lireManette(REMOTE_read()); // 1 = DEMARRAGE, 2 = REVEIL
+
+        if (code == 2)
+        {
+            reveilRecu = true;
+        }
+        else if (code == 1 && reveilRecu)
+        {
+            return;
+        }
+
+        delay(10);
+    }
+}
+
 // Fonction pour émettre un signal sonore avec le buzzer
 void beep(int count){
   for(int i=0;i<count;i++){

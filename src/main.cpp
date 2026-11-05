@@ -26,13 +26,9 @@ Variables globales et defines
  -> L'ensemble des fonctions y ont acces
 */
 
-void SleepRobot(void);
-
 bool bumperArr;
 int vertpin = 48;
 int rougepin = 49;
-bool sleep = true;
-bool start = false;
 
 void setup(){
   BoardInit();
@@ -55,56 +51,13 @@ void setup(){
 
   analogReference(INTERNAL2V56);
 
-  SleepRobot();
+  // Depart : attendre REVEIL puis DEMARRAGE avant de commencer loop()
+  attendreReveilPuisDemarrage();
 }
 
 
-void loop() 
+void loop()
 {
-    // Zone bleue : le robot dort jusqu'au bouton REVEIL
-  if (sleep == true)
-  {
-    lireManette(REMOTE_read());
-
-    if (demandeReveil == true)
-    {
-      sleep = false;
-      demandeReveil = false;
-
-            // Sortir de la zone bleue (followLine ignore les couleurs pendant
-            // 4 s), sinon le robot la revoit et se rendort aussitot.
-      followLine(0.17, GetZoneColor);
-    }
-
-    delay(10);
-
-    return;
-  }
-  // Demarrage initial : attend le bouton DEMARRAGE (une seule fois)
-  if (start == false)
-  {
-    // Etalonnage : affiche les valeurs du capteur de couleur pendant que
-    // le robot attend, pour pouvoir le poser sur chaque couleur sans qu'il bouge.
-    static unsigned long derniereLecture = 0;
-    if (millis() - derniereLecture > 250)
-    {
-        derniereLecture = millis();
-        GetZoneColor();
-    }
-
-    lireManette(REMOTE_read());
-
-    if (demandeDemarrage == true)
-    {
-        start = true;
-        demandeDemarrage = false;
-    }
-
-    delay(10);
-        
-    return;
-  }
-
   UpdateLedModule();
 
   arret();
@@ -130,15 +83,9 @@ void loop()
 
         break;
     case CZ_BLUE:
-      while(lireManette(REMOTE_read()) != 1)
-      {
-        delay(10);
-      }
-
-      while(lireManette(REMOTE_read()) != 2)
-      {
-        delay(10);
-      }
+      // Robot deja arrete par arret() : attendre REVEIL puis DEMARRAGE.
+      // followLine ignore les couleurs pendant 4 s, ce qui sort le robot du bleu.
+      attendreReveilPuisDemarrage();
       followLine(0.17, GetZoneColor);
       break;
     case CZ_GREEN:
@@ -158,11 +105,4 @@ void loop()
       break;
   }
   delay(10);
-}
-
-void SleepRobot(void)
-{
-    sleep = true;
-    start = false;
-    arret();
 }
