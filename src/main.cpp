@@ -62,47 +62,48 @@ void setup(){
 void loop() 
 {
   UpdateLedModule();
-  if(demandeDemarrage == false)
-  {
-    while(lireManette(REMOTE_read()) != 1)
-    {
-      delay(10);
-    }
-    demandeDemarrage = true;
-  }
-=======
-    if (sleep == true)
-    {
-        lireManette(REMOTE_read());
+  // if(demandeDemarrage == false)
+  // {
+  //   while(lireManette(REMOTE_read()) != 1)
+  //   {
+  //     delay(10);
+  //   }
+  //   demandeDemarrage = true;
+  // }
 
-        if (demandeReveil == true)
-        {
-            sleep = false;
-            demandeReveil = false;
-        }
+  // if (sleep == true)
+  // {
+  //   lireManette(REMOTE_read());
+
+  //   if (demandeReveil == true)
+  //   {
+  //       sleep = false;
+  //       demandeReveil = false;
+  //   }
         
-        delay(10);
+  //   delay(10);
 
-        return;
-    }
-    if (start == false)
-    {
-        lireManette(REMOTE_read());
+  //   return;
+  // }
+  // if (start == false)
+  // {
+  //   lireManette(REMOTE_read());
 
-        if (demandeDemarrage == true)
-        {
-            start = true;
-            demandeDemarrage = false;
-        }
+  //   if (demandeDemarrage == true)
+  //   {
+  //       start = true;
+  //       demandeDemarrage = false;
+  //   }
 
-        delay(10);
+  //   delay(10);
         
-        return;
-    }
+  //   return;
+  // }
 
-    UpdateLedModule();
+  // UpdateLedModule();
 
-  arret();
+  // arret();
+
   switch(GetZoneColor())
   {
     case CZ_RED: // (ROSE)

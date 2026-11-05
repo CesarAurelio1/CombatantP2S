@@ -221,8 +221,8 @@ void recule(float distance) {
     offsetG = nombre_pasD - nombre_pasG;
     progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
     vitesse = calculVitesse(progression);
-    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD), -0.3, vitesse_max);
-    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max);
+    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD), -0.3, vitesse_max-0.15);
+    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max-0.15);
 
     MOTOR_SetSpeed(RIGHT, -pidD);
     MOTOR_SetSpeed(LEFT, -pidG);
@@ -285,8 +285,6 @@ void suivre_ligne()
   float previous_error = 0;
   float integral = 0;
   float erreur = 0;
-  float erreurFiltree = 0;
-  float a = 0.5; // 0 = quadratique, 1 = linéaire (commence à 0.5)
 
   unsigned long prochain = millis();
   unsigned long dernierAffichage = 0;
