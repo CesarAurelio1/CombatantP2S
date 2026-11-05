@@ -70,29 +70,30 @@ void loop()
             sleep = false;
             demandeReveil = false;
         }
-        
+            
         delay(10);
 
         return;
     }
     if (start == false)
     {
-        lireManette(REMOTE_read());
+      lireManette(REMOTE_read());
 
-        if (demandeDemarrage == true)
-        {
-            start = true;
-            demandeDemarrage = false;
-        }
+      if (demandeDemarrage == true)
+      {
+          start = true;
+          demandeDemarrage = false;
+      }
 
-        delay(10);
-        
-        return;
+      delay(10);
+          
+      return;
     }
 
-    UpdateLedModule();
+  UpdateLedModule();
 
   arret();
+
   switch(GetZoneColor())
   {
     case CZ_RED: // (ROSE)
