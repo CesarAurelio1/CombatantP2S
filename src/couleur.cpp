@@ -39,8 +39,9 @@ static const ColorReference REFERENCES[] = {
 };
 
 // Set to true to print "R G B -> zone" on every reading (for calibration).
-// Set back to false afterwards: printing at 9600 baud slows the line follower.
-static const bool PRINT_COLOR_VALUES = false;
+// Can be switched on and off from main.cpp around specific readings.
+// Leave it false otherwise: printing at 9600 baud slows the line follower.
+bool printColorValues = false;
 
 // Number of entries in the table (computed automatically, so adding a color
 // to REFERENCES does not require changing the loop below).
@@ -127,7 +128,7 @@ enum Color_Zone GetZoneColor() {
 
     // Zone printed as the enum value: 0 = RED, 1 = YELLOW, 2 = ORANGE,
     // 3 = BLUE, 4 = GREEN, 5 = OTHER.
-    if (PRINT_COLOR_VALUES) {
+    if (printColorValues) {
         Serial.print(red);   Serial.print(" ");
         Serial.print(green); Serial.print(" ");
         Serial.print(blue);  Serial.print(" -> ");

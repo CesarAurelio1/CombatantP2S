@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include <LibRobus.h> // Essentielle pour utiliser RobUS
+#include "couleur.h"
 
 /*enum Color_Zone {
   CZ_RED,
@@ -15,6 +16,7 @@
 };*/
 
 void InitLedModule(void);
-void UpdateLedModule(void);
+// Allume la DEL de la zone recue (lue une seule fois dans loop())
+void UpdateLedModule(enum Color_Zone zone);
 
 #endif /* LED_MODULE_H */

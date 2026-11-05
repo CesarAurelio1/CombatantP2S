@@ -12,7 +12,6 @@ Inclure les librairies de functions que vous voulez utiliser
 #include "ledModule.h"
 #include "couleur.h"
 
-static enum Color_Zone GetLEDColor();
 static void DisplayColor(uint8_t pin);
 static void ClearColorDisplay(void);
 
@@ -52,9 +51,9 @@ void InitLedModule(void)
     colorIsDisplayed = false;
 }
 
-void UpdateLedModule(void)
+void UpdateLedModule(enum Color_Zone zone)
 {
-    currentColor = GetLEDColor();
+    currentColor = zone;
 
     if (currentColor != lastColor)
     {
@@ -112,11 +111,6 @@ void UpdateLedModule(void)
 /* ****************************************************************************
 Vos propres fonctions sont creees ici
 **************************************************************************** */
-static enum Color_Zone GetLEDColor()
-{
-    return GetZoneColor();
-}
-
 static void DisplayColor(uint8_t pin)
 {
     ClearColorDisplay();

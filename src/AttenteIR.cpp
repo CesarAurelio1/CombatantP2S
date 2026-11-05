@@ -17,13 +17,13 @@ int lireManette(uint32_t message)
     {
         beep(2);
         demandeDemarrage = true; // Remettre à false après traitement dans le programme principal
-        return 1;
+        return COMMANDE_DEMARRAGE;
     }
     else if (message == REVEIL)
     {
         beep(3);
         demandeReveil = true; // Remettre à false après traitement dans le programme principal
-        return 2;
+        return COMMANDE_REVEIL;
     }
     if (message != 0) {
         // Afficher le code pour vérifier ce que le robot reçoit
@@ -32,25 +32,12 @@ int lireManette(uint32_t message)
     return 0;
 }
 
-// Bloque jusqu'a recevoir REVEIL puis DEMARRAGE, dans cet ordre.
-// Un DEMARRAGE recu avant REVEIL est ignore.
-void attendreReveilPuisDemarrage()
+// Bloque jusqu'a recevoir la commande attendue (COMMANDE_DEMARRAGE ou
+// COMMANDE_REVEIL). L'autre commande bipe quand meme (lireManette) mais est ignoree.
+void attendreCommande(int commandeAttendue)
 {
-    bool reveilRecu = false;
-
-    while (true)
+    while (lireManette(REMOTE_read()) != commandeAttendue)
     {
-        int code = lireManette(REMOTE_read()); // 1 = DEMARRAGE, 2 = REVEIL
-
-        if (code == 2)
-        {
-            reveilRecu = true;
-        }
-        else if (code == 1 && reveilRecu)
-        {
-            return;
-        }
-
         delay(10);
     }
 }

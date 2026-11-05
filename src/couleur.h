@@ -15,6 +15,9 @@ enum Color_Zone {
   CZ_OTHER
 };
 
+// When true, every reading prints "R G B -> zone" on the serial port.
+extern bool printColorValues;
+
 // Call once in setup(): starts the TCS34725 sensor.
 void InitColorSensor();
 

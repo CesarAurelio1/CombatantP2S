@@ -6,10 +6,6 @@ static float progression = 0;
 
 static const unsigned long PERIODE_MS = 10;
 
-static float previous_errorD = 0;
-static float previous_errorG = 0;
-static float integralD = 0;
-static float integralG = 0;
 static float Kp = 0.00002;
 static float Ki = 0.00005;
 static float Kd = 0.00005;
@@ -134,49 +130,63 @@ void diminuer_Ksync(float valeur)
   Ksync -= valeur;
 }
 
-void avance(float distance) {
+// Deplacement en ligne droite, commun a avance() et recule().
+// sens = 1 pour avancer, -1 pour reculer. vitesse_plafond = vitesse de base max.
+//
+// La vitesse de base suit le profil calculVitesse() (accelere, croisiere,
+// ralentit). La synchronisation est ajoutee APRES : la roue en avance ralentit
+// et celle en retard accelere. Avant, base + PID depassaient vitesse_max et
+// constrain() coupait aussi la synchronisation : le robot derivait d'environ
+// 8 degres sur 1 m.
+static void deplacer(float distance, int sens, float vitesse_plafond)
+{
+  // Marge au-dessus du plafond pour que la roue en retard puisse toujours
+  // accelerer, meme quand la vitesse de base est deja au plafond.
+  const float MARGE_SYNC = 0.03;
+
   progression = 0;
-  previous_errorD = 0;
-  previous_errorG = 0;
-  integralD = 0;
-  integralG = 0;
   nombre_pasD = 0;
   nombre_pasG = 0;
-
-  float offsetD = 0;
-  float offsetG = 0;
 
   ENCODER_Reset(0);
   ENCODER_Reset(1);
 
   unsigned long prochain = millis();
-    
+
   float cible = (distance / circ_roue) * pulses_per_revolution;
 
   while (nombre_pasD < cible || nombre_pasG < cible) {
 
-    if (nombre_pasD > cible)
+    progression = (float(nombre_pasG)/cible + float(nombre_pasD)/cible)/2;
+    vitesse = min(calculVitesse(progression), vitesse_plafond);
+
+    // > 0 : la roue droite est en retard sur la gauche
+    float correction = Ksync * (nombre_pasG - nombre_pasD);
+
+    // Minimum vitesse_min : une roue pas encore arrivee ne doit jamais ralentir
+    // au point de caler, sinon la boucle ne se termine jamais.
+    float vD = constrain(vitesse + correction, vitesse_min, vitesse_plafond + MARGE_SYNC);
+    float vG = constrain(vitesse - correction, vitesse_min, vitesse_plafond + MARGE_SYNC);
+
+    // Une roue arrivee a la cible reste arretee pendant que l'autre finit.
+    MOTOR_SetSpeed(RIGHT, nombre_pasD >= cible ? 0 : sens * vD);
+    MOTOR_SetSpeed(LEFT, nombre_pasG >= cible ? 0 : sens * vG);
+
+    // labs() : on compte la distance parcourue, peu importe le sens
+    nombre_pasD += labs(ENCODER_ReadReset(RIGHT));
+    nombre_pasG += labs(ENCODER_ReadReset(LEFT));
+
+    // DEBUG : etat toutes les 0,5 s (cible, pas D/G, vitesses D/G)
+    static unsigned long dernierAffichage = 0;
+    if (millis() - dernierAffichage > 500)
     {
-      MOTOR_SetSpeed(RIGHT, 0);
+      dernierAffichage = millis();
+      Serial.print(sens > 0 ? "avance: cible=" : "recule: cible="); Serial.print(cible);
+      Serial.print(" D="); Serial.print(nombre_pasD);
+      Serial.print(" G="); Serial.print(nombre_pasG);
+      Serial.print(" vD="); Serial.print(vD);
+      Serial.print(" vG="); Serial.println(vG);
     }
-    
-    else if (nombre_pasG > cible)
-    {
-      MOTOR_SetSpeed(LEFT, 0);
-    }
-
-    offsetD = nombre_pasG - nombre_pasD;
-    offsetG = nombre_pasD - nombre_pasG;
-    progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
-    vitesse = calculVitesse(progression);
-    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD),-0.3, vitesse_max);
-    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max);
-
-    MOTOR_SetSpeed(RIGHT, pidD);
-    MOTOR_SetSpeed(LEFT, pidG);
-
-    nombre_pasD += ENCODER_ReadReset(RIGHT);
-    nombre_pasG += ENCODER_ReadReset(LEFT);
 
     prochain += PERIODE_MS;
     long attente = (long)(prochain - millis());
@@ -186,56 +196,13 @@ void avance(float distance) {
   arret();
 }
 
+void avance(float distance) {
+  deplacer(distance, 1, vitesse_max);
+}
+
 void recule(float distance) {
-  progression = 0;
-  previous_errorD = 0;
-  previous_errorG = 0;
-  integralD = 0;
-  integralG = 0;
-  nombre_pasD = 0;
-  nombre_pasG = 0;
-
-  float offsetD = 0;
-  float offsetG = 0;
-
-  ENCODER_Reset(0);
-  ENCODER_Reset(1);
-
-  unsigned long prochain = millis();
-    
-  float cible = (distance / circ_roue) * pulses_per_revolution;
-
-  while (nombre_pasD < cible || nombre_pasG < cible) {
-
-    if (nombre_pasD > cible)
-    {
-      MOTOR_SetSpeed(RIGHT, 0);
-    }
-    
-    else if (nombre_pasG > cible)
-    {
-      MOTOR_SetSpeed(LEFT, 0);
-    }
-
-    offsetD = nombre_pasG - nombre_pasD;
-    offsetG = nombre_pasD - nombre_pasG;
-    progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
-    vitesse = calculVitesse(progression);
-    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD), -0.3, vitesse_max-0.2);
-    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max-0.2);
-
-    MOTOR_SetSpeed(RIGHT, -pidD);
-    MOTOR_SetSpeed(LEFT, -pidG);
-
-    nombre_pasD += labs(ENCODER_ReadReset(RIGHT));
-    nombre_pasG += labs(ENCODER_ReadReset(LEFT));
-
-    prochain += PERIODE_MS;
-    long attente = (long)(prochain - millis());
-    if (attente > 0) delay(attente);
-  }
-
-  arret();
+  // Recul lent (pince a l'arriere) : plafond de 0.1
+  deplacer(distance, -1, vitesse_max - 0.2);
 }
 
 static float derniere_erreur = 0;
