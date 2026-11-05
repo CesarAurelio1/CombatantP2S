@@ -42,7 +42,7 @@ void CLAW_open(){
 }
 
 void CLAW_close(){
-  SERVO_SetAngle(1, 150);
+  SERVO_SetAngle(1, 120);
   delay(500);
   SERVO_SetAngle(0, 60);
   delay(500);

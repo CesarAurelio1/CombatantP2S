@@ -61,15 +61,7 @@ void setup(){
 
 void loop() 
 {
-  UpdateLedModule();
-  if(demandeDemarrage == false)
-  {
-    while(lireManette(REMOTE_read()) != 1)
-    {
-      delay(10);
-    }
-    demandeDemarrage = true;
-  }
+    // Zone bleue : le robot dort jusqu'au bouton REVEIL
   if (sleep == true)
   {
     lireManette(REMOTE_read());
@@ -78,20 +70,34 @@ void loop()
     {
       sleep = false;
       demandeReveil = false;
+
+            // Sortir de la zone bleue (followLine ignore les couleurs pendant
+            // 4 s), sinon le robot la revoit et se rendort aussitot.
+      followLine(0.17, GetZoneColor);
     }
-        
+
     delay(10);
 
     return;
   }
+  // Demarrage initial : attend le bouton DEMARRAGE (une seule fois)
   if (start == false)
   {
+    // Etalonnage : affiche les valeurs du capteur de couleur pendant que
+    // le robot attend, pour pouvoir le poser sur chaque couleur sans qu'il bouge.
+    static unsigned long derniereLecture = 0;
+    if (millis() - derniereLecture > 250)
+    {
+        derniereLecture = millis();
+        GetZoneColor();
+    }
+
     lireManette(REMOTE_read());
 
     if (demandeDemarrage == true)
     {
-      start = true;
-      demandeDemarrage = false;
+        start = true;
+        demandeDemarrage = false;
     }
 
     delay(10);
@@ -105,6 +111,7 @@ void loop()
   switch(GetZoneColor())
   {
     case CZ_RED: // (ROSE)
+      recule(10);
       trouver_quille();
       followLine(0.17, GetZoneColor);
 
@@ -115,6 +122,7 @@ void loop()
 
       break;
     case CZ_ORANGE:
+    recule(10);
       CLAW_open();
       trouver_verre();
       delay(10);
@@ -122,21 +130,25 @@ void loop()
 
         break;
     case CZ_BLUE:
-      if(demandeReveil == false)
+      while(lireManette(REMOTE_read()) != 1)
       {
-        arret();
-        while(lireManette(REMOTE_read()) != 2)
-        {
-            delay(10);
-        }
-        demandeReveil = true;
+        delay(10);
       }
-      SleepRobot();
+
+      while(lireManette(REMOTE_read()) != 2)
+      {
+        delay(10);
+      }
+      followLine(0.17, GetZoneColor);
       break;
     case CZ_GREEN:
-      turn_degrees(10, 1);
-      avance(100);
-      turn_degrees(10, 1);
+      avance(3);
+      if(GetZoneColor() == CZ_GREEN)
+      {
+        turn_degrees(10, 0);
+        avance(100);
+        turn_degrees(10, 1);
+      }
       break;
     case CZ_OTHER:
       followLine(0.17, GetZoneColor);

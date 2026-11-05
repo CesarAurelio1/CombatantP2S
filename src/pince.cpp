@@ -56,7 +56,7 @@ void trouver_verre()
   MOTOR_SetSpeed(LEFT, -0.1);
 
   // 3. Pivoter TANT QUE le capteur ne détecte pas l'obstacle (< 400)
-  while (distance_capteur < 400)
+  while (distance_capteur < 500)
   {
     delay(10);
     distance_capteur = analogRead(CAPTEUR_PIN);
@@ -71,13 +71,13 @@ void trouver_verre()
   delay(100);
 
   // 5. Ajustement de 10 degrés
-  turn_degrees(10, 1); 
+  // turn_degrees(10, 1); 
   delay(100);
 
   // 6. Mouvements d'approche / recul vers la quille
-  recule(30);
+  recule(20);
   CLAW_close();
-  avance(30);
+  avance(20);
 
   // 7. Rotation de RETOUR (Sens inverse de la recherche)
   ENCODER_Reset(RIGHT);
@@ -127,7 +127,7 @@ void trouver_quille()
   MOTOR_SetSpeed(LEFT, -0.1);
 
   // 3. Pivoter TANT QUE le capteur ne détecte pas l'obstacle (< 400)
-  while (distance_capteur < 400)
+  while (distance_capteur < 500)
   {
     delay(10);
     distance_capteur = analogRead(CAPTEUR_PIN);
