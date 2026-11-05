@@ -10,6 +10,7 @@
             "includePath": [
                 "C:/Users/Mapou/Desktop/projet_session/E_C/include",
                 "C:/Users/Mapou/Desktop/projet_session/E_C/src",
+                "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/TimerThree",
                 "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/Servo/src",
                 "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/LibRobus/src",
                 "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
@@ -29,6 +30,7 @@
                 "path": [
                     "C:/Users/Mapou/Desktop/projet_session/E_C/include",
                     "C:/Users/Mapou/Desktop/projet_session/E_C/src",
+                    "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/TimerThree",
                     "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/Servo/src",
                     "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/LibRobus/src",
                     "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",

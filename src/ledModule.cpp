@@ -11,10 +11,14 @@ Inclure les librairies de functions que vous voulez utiliser
 **************************************************************************** */
 #include "ledModule.h"
 #include "couleur.h"
+#include "TimerThree.h"
 
 static enum Color_Zone GetLEDColor();
 static void DisplayColor(uint8_t pin);
 static void ClearColorDisplay(void);
+static void Timer3ISR(void);
+static void timer_start(void);
+static void timer_stop(void);
 
 
 static const uint8_t RED_LED_PIN = 42;
@@ -30,6 +34,7 @@ static enum Color_Zone lastColor = CZ_OTHER;
 static unsigned long timestamp = 0;
 
 static bool colorIsDisplayed = false;
+static uint8_t elapsedSeconds = 0;
 
 
 void InitLedModule(void)
@@ -99,14 +104,6 @@ void UpdateLedModule(void)
 
         lastColor = currentColor;
     }
-
-    if (colorIsDisplayed)
-    {
-        if (millis() - timestamp >= LED_DISPLAY_TIME_MS)
-        {
-            ClearColorDisplay();
-        }
-    }
 }
 
 /* ****************************************************************************
@@ -126,6 +123,8 @@ static void DisplayColor(uint8_t pin)
     digitalWrite(pin, LOW);
 
     colorIsDisplayed = true;
+
+    timer_start();
 }
 
 static void ClearColorDisplay(void)
@@ -137,4 +136,29 @@ static void ClearColorDisplay(void)
     digitalWrite(GREEN_LED_PIN, HIGH);
 
     colorIsDisplayed = false;
+}
+
+static void Timer3ISR(void)
+{
+    elapsedSeconds++;
+
+    if (elapsedSeconds >= 10)
+    {
+        ClearColorDisplay();
+
+        timer_stop();
+    }
+}
+
+static void timer_start(void) 
+{
+    elapsedSeconds = 0;
+    Timer3.initialize(1000000); // période en µs : 1 s
+    Timer3.attachInterrupt(Timer3ISR);
+}
+
+static void timer_stop(void) 
+{
+    Timer3.stop();
+    Timer3.detachInterrupt();
 }
