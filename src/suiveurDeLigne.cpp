@@ -16,9 +16,9 @@ static int suiveurGauche = A0;
 static int suiveurCentre = A1;
 static int suiveurDroite = A2;
 
-float Kp_suiveur = 2.5;
+float Kp_suiveur = 5;
 float Ki_suiveur = 0.0001;
-float Kd_suiveur = 0.5;
+float Kd_suiveur = 0.7;
 
 struct PID_return
 {
@@ -193,7 +193,7 @@ void followLine(float vitesse_de_croisiere, enum Color_Zone (*condition)())
   float ancienne_erreur = 0;
   float start_time = timestamp;
 
-  while (condition() == CZ_OTHER || timestamp - start_time < 4000)
+  while (condition() == CZ_OTHER || timestamp - start_time < 2000)
   {
     erreur = calcul_erreur();
     PID_return vitesses = PID(vitesse_de_croisiere, erreur, integrale, ancienne_erreur, timestamp, Kp_suiveur, Ki_suiveur, Kd_suiveur);

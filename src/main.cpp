@@ -70,37 +70,36 @@ void loop()
     }
     demandeDemarrage = true;
   }
-=======
-    if (sleep == true)
+  if (sleep == true)
+  {
+    lireManette(REMOTE_read());
+
+    if (demandeReveil == true)
     {
-        lireManette(REMOTE_read());
-
-        if (demandeReveil == true)
-        {
-            sleep = false;
-            demandeReveil = false;
-        }
-        
-        delay(10);
-
-        return;
+      sleep = false;
+      demandeReveil = false;
     }
-    if (start == false)
-    {
-        lireManette(REMOTE_read());
-
-        if (demandeDemarrage == true)
-        {
-            start = true;
-            demandeDemarrage = false;
-        }
-
-        delay(10);
         
-        return;
+    delay(10);
+
+    return;
+  }
+  if (start == false)
+  {
+    lireManette(REMOTE_read());
+
+    if (demandeDemarrage == true)
+    {
+      start = true;
+      demandeDemarrage = false;
     }
 
-    UpdateLedModule();
+    delay(10);
+        
+    return;
+  }
+
+  UpdateLedModule();
 
   arret();
   switch(GetZoneColor())
@@ -111,7 +110,7 @@ void loop()
 
       break;
     case CZ_YELLOW:
-      contourner_mur(60);
+      contourner_mur(40);
       followLine(0.17, GetZoneColor);
 
       break;

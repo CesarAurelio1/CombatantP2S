@@ -20,6 +20,7 @@
                 "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/variants/mega",
                 "C:/Users/Mapou/Desktop/projet_session/E_C/lib/LibRobUS-master/src",
+                "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/TimerThree",
                 "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
                 "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                 ""
@@ -39,6 +40,7 @@
                     "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/variants/mega",
                     "C:/Users/Mapou/Desktop/projet_session/E_C/lib/LibRobUS-master/src",
+                    "C:/Users/Mapou/Desktop/projet_session/E_C/.pio/libdeps/megaatmega2560/TimerThree",
                     "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
                     "C:/Users/Mapou/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                     ""
