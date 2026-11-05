@@ -31,7 +31,7 @@ void SleepRobot(void);
 bool bumperArr;
 int vertpin = 48;
 int rougepin = 49;
-bool sleep = true;
+bool sleep = false;
 bool start = false;
 
 void setup(){
@@ -54,13 +54,12 @@ void setup(){
   MOTOR_SetSpeed(RIGHT, 0);
 
   analogReference(INTERNAL2V56);
-
-  SleepRobot();
 }
 
 
-void loop() 
+void loop()
 {
+    // Zone bleue : le robot dort jusqu'au bouton REVEIL
     if (sleep == true)
     {
         lireManette(REMOTE_read());
@@ -69,14 +68,28 @@ void loop()
         {
             sleep = false;
             demandeReveil = false;
+
+            // Sortir de la zone bleue (followLine ignore les couleurs pendant
+            // 4 s), sinon le robot la revoit et se rendort aussitot.
+            followLine(0.17, GetZoneColor);
         }
-            
+
         delay(10);
 
         return;
     }
+    // Demarrage initial : attend le bouton DEMARRAGE (une seule fois)
     if (start == false)
     {
+      // Etalonnage : affiche les valeurs du capteur de couleur pendant que
+      // le robot attend, pour pouvoir le poser sur chaque couleur sans qu'il bouge.
+      static unsigned long derniereLecture = 0;
+      if (millis() - derniereLecture > 250)
+      {
+          derniereLecture = millis();
+          GetZoneColor();
+      }
+
       lireManette(REMOTE_read());
 
       if (demandeDemarrage == true)
@@ -101,29 +114,38 @@ void loop()
       followLine(0.17, GetZoneColor);
 
       break;
+
     case CZ_YELLOW:
       contourner_mur(60);
       followLine(0.17, GetZoneColor);
 
       break;
+
     case CZ_ORANGE:
       CLAW_open();
       trouver_verre();
       delay(10);
       followLine(0.17, GetZoneColor);
 
-        break;
+      break;
+
     case CZ_BLUE:
       SleepRobot();
+
       break;
+
     case CZ_GREEN:
       turn_degrees(10, 1);
       avance(100);
       turn_degrees(10, 1);
+
       break;
+    
     case CZ_OTHER:
       followLine(0.17, GetZoneColor);
+      
       break;
+
     default:
       arret(); // Temporaire, à remplacer par le code approprié pour gérer les autres couleurs
       break;
@@ -134,6 +156,7 @@ void loop()
 void SleepRobot(void)
 {
     sleep = true;
-    start = false;
+    // Oublier un ancien appui sur REVEIL, sinon le robot repartirait tout de suite
+    demandeReveil = false;
     arret();
 }
