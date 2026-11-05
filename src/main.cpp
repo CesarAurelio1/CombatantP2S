@@ -61,16 +61,6 @@ void setup(){
 
 void loop() 
 {
-  UpdateLedModule();
-  if(demandeDemarrage == false)
-  {
-    while(lireManette(REMOTE_read()) != 1)
-    {
-      delay(10);
-    }
-    demandeDemarrage = true;
-  }
-=======
     if (sleep == true)
     {
         lireManette(REMOTE_read());
@@ -123,15 +113,6 @@ void loop()
 
         break;
     case CZ_BLUE:
-      if(demandeReveil == false)
-      {
-        arret();
-        while(lireManette(REMOTE_read()) != 2)
-        {
-            delay(10);
-        }
-        demandeReveil = true;
-      }
       SleepRobot();
       break;
     case CZ_GREEN:
