@@ -155,25 +155,18 @@ void avance(float distance) {
 
   while (nombre_pasD < cible || nombre_pasG < cible) {
 
-    if (nombre_pasD > cible)
-    {
-      MOTOR_SetSpeed(RIGHT, 0);
-    }
-    
-    else if (nombre_pasG > cible)
-    {
-      MOTOR_SetSpeed(LEFT, 0);
-    }
-
     offsetD = nombre_pasG - nombre_pasD;
     offsetG = nombre_pasD - nombre_pasG;
     progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
     vitesse = calculVitesse(progression);
-    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD),-0.3, vitesse_max);
-    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max);
+    // Minimum 0 : en avancant, une roue ne doit jamais reculer
+    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD), 0, vitesse_max);
+    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), 0, vitesse_max);
 
-    MOTOR_SetSpeed(RIGHT, pidD);
-    MOTOR_SetSpeed(LEFT, pidG);
+    // Une roue arrivee a la cible reste arretee. Sinon le PID la relance, elle
+    // depasse la cible puis recule : le robot avance et recule sans arret.
+    MOTOR_SetSpeed(RIGHT, nombre_pasD >= cible ? 0 : pidD);
+    MOTOR_SetSpeed(LEFT, nombre_pasG >= cible ? 0 : pidG);
 
     nombre_pasD += ENCODER_ReadReset(RIGHT);
     nombre_pasG += ENCODER_ReadReset(LEFT);
@@ -207,25 +200,17 @@ void recule(float distance) {
 
   while (nombre_pasD < cible || nombre_pasG < cible) {
 
-    if (nombre_pasD > cible)
-    {
-      MOTOR_SetSpeed(RIGHT, 0);
-    }
-    
-    else if (nombre_pasG > cible)
-    {
-      MOTOR_SetSpeed(LEFT, 0);
-    }
-
     offsetD = nombre_pasG - nombre_pasD;
     offsetG = nombre_pasD - nombre_pasG;
     progression = (float(abs(nombre_pasG))/cible + float(abs(nombre_pasD))/cible)/2;
     vitesse = calculVitesse(progression);
-    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD), -0.3, vitesse_max);
-    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), -0.3, vitesse_max);
+    // Minimum 0 : en reculant, une roue ne doit jamais avancer
+    float pidD = constrain(vitesse + pid(offsetD, nombre_pasD, cible, Kp, Ki, Kd, previous_errorD, integralD), 0, vitesse_max);
+    float pidG = constrain(vitesse + pid(offsetG, nombre_pasG, cible, Kp, Ki, Kd, previous_errorG, integralG), 0, vitesse_max);
 
-    MOTOR_SetSpeed(RIGHT, -pidD);
-    MOTOR_SetSpeed(LEFT, -pidG);
+    // Une roue arrivee a la cible reste arretee (voir avance())
+    MOTOR_SetSpeed(RIGHT, nombre_pasD >= cible ? 0 : -pidD);
+    MOTOR_SetSpeed(LEFT, nombre_pasG >= cible ? 0 : -pidG);
 
     nombre_pasD += labs(ENCODER_ReadReset(RIGHT));
     nombre_pasG += labs(ENCODER_ReadReset(LEFT));

@@ -30,7 +30,7 @@ struct ColorReference {
 static const ColorReference REFERENCES[] = {
   { CZ_RED,    {210, 158, 133} },   // Measured on the robot (average)
   { CZ_YELLOW, {165, 187, 97} },    // Measured on the robot (average)
-  { CZ_ORANGE, {130, 113, 69} },    // Old value (no orange available to measure)
+  { CZ_ORANGE, {130, 113, 69} },    // Old value (only the proportions matter)
   { CZ_BLUE,   {70, 123, 119} },    // Measured on the robot
   { CZ_GREEN,  {124, 182, 142} },   // Measured on the robot (average)
   // White floor: not a zone, but it MUST be in the table. Without it, white is
@@ -49,41 +49,63 @@ static const int REFERENCE_COUNT = sizeof(REFERENCES) / sizeof(REFERENCES[0]);
 /* ****************************************************************************
 Color detection
 **************************************************************************** */
+// Converts raw {R, G, B} into proportions: each channel as a share (per
+// thousand) of R + G + B. When the sensor is higher or lower, all three raw
+// values go up or down together but the proportions stay the same. Comparing
+// raw values made a darker yellow look like orange.
+static void to_proportions(const uint16_t rgb[3], int32_t proportions[3]) {
+    int32_t sum = static_cast<int32_t>(rgb[0]) + rgb[1] + rgb[2];
+    if (sum == 0) sum = 1; // Avoid dividing by zero
+
+    for (int channel = 0; channel < 3; channel++) {
+        proportions[channel] = static_cast<int32_t>(rgb[channel]) * 1000 / sum;
+    }
+}
+
 enum Color_Zone detect_color(const uint16_t color_values[]) {
-    // Largest distance (in raw sensor units) we still accept as a match.
-    // Adjust this threshold while testing.
-    // Red readings vary by up to ~40 with the sensor height, hence 50.
-    const uint16_t max_color_distance = 50;
+    // Below this brightness (R + G + B) the proportions are too noisy to trust
+    // (e.g. black line). The darkest measured surfaces (white, blue) are ~300.
+    const int32_t min_brightness = 150;
+
+    // Largest distance (in proportion units, per thousand) we still accept as
+    // a match. Closest references (red / orange) are 64 apart, hence 30.
+    const int32_t max_color_distance = 30;
 
     // We compare SQUARED distances to avoid computing a square root (slow on
     // an Arduino). So the threshold must be squared too.
-    const uint64_t max_distance_squared =
-        static_cast<uint64_t>(max_color_distance) * max_color_distance;
+    // Proportions are at most 1000, so 32-bit math is enough here.
+    const int32_t max_distance_squared = max_color_distance * max_color_distance;
+
+    if (static_cast<int32_t>(color_values[0]) + color_values[1] + color_values[2]
+            < min_brightness) {
+        return CZ_OTHER;
+    }
+
+    int32_t measured[3];
+    to_proportions(color_values, measured);
 
     // Start with the biggest possible value so the first comparison always wins.
-    uint64_t min_distance_squared = 0xFFFFFFFFFFFFFFFFULL;
+    int32_t min_distance_squared = INT32_MAX;
 
     // Best match so far. Defaults to CZ_OTHER ("unknown").
     enum Color_Zone detected_zone = CZ_OTHER;
 
     // Go through each reference color and keep the closest one.
     for (int i = 0; i < REFERENCE_COUNT; i++) {
+        int32_t reference[3];
+        to_proportions(REFERENCES[i].rgb, reference);
+
         // Difference between the measured value and the reference, per channel.
-        // Cast to signed 32-bit so the subtraction can be negative.
-        int32_t red_difference =
-            static_cast<int32_t>(color_values[0]) - REFERENCES[i].rgb[0];
-        int32_t green_difference =
-            static_cast<int32_t>(color_values[1]) - REFERENCES[i].rgb[1];
-        int32_t blue_difference =
-            static_cast<int32_t>(color_values[2]) - REFERENCES[i].rgb[2];
+        int32_t red_difference = measured[0] - reference[0];
+        int32_t green_difference = measured[1] - reference[1];
+        int32_t blue_difference = measured[2] - reference[2];
 
         // 3D distance formula (Pythagoras) without the square root:
         // d^2 = dR^2 + dG^2 + dB^2
-        // 64-bit math is used because the squares can overflow 32 bits.
-        uint64_t distance_squared =
-            static_cast<uint64_t>(static_cast<int64_t>(red_difference) * red_difference) +
-            static_cast<uint64_t>(static_cast<int64_t>(green_difference) * green_difference) +
-            static_cast<uint64_t>(static_cast<int64_t>(blue_difference) * blue_difference);
+        int32_t distance_squared =
+            red_difference * red_difference +
+            green_difference * green_difference +
+            blue_difference * blue_difference;
 
         // Keep this reference if it is closer than the previous best.
         if (distance_squared < min_distance_squared) {
